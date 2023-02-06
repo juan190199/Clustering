@@ -72,6 +72,10 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     }
   }
 
+  # ToDo: Find the two closest clusters to merge
+
+  # ToDo: Merge the two closest clusters
+
 }
 
 
