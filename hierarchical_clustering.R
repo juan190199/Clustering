@@ -63,6 +63,15 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     }
   )
 
+  while (length(clusters) > 1) {
+    # Calculate pairwise distances between clusters
+    for (i in 1:(length(clusters) - 1)) {
+      for (j in (i + 1):length(clusters)) {
+        cluster_distances[i, j] <- linkage_fun(clusters[[i]], clusters[[j]])
+      }
+    }
+  }
+
 }
 
 
