@@ -27,7 +27,7 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
 
   # Define function for linkage method
   linkage_fun <- switch(
-    linkage_method,
+    linkage_fun,
     "single" = function (cluster1, cluster2) {
       dists <- apply(expand.grid(cluster1, cluster2), 1, function(x) euclidean_distance(X[x[1], ], X[x[2], ]))
       return(min(dists))
@@ -85,3 +85,6 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
 
   return(clusters[[1]])
 }
+
+X <- matrix(rnorm(100), ncol=2)
+result <- agglomerative_hierarchical_clustering(X, "single")
