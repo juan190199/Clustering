@@ -72,7 +72,11 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     }
   }
 
-  # ToDo: Find the two closest clusters to merge
+  # Find the two closest clusters to merge
+  min_distance <- min(cluster_distances[cluster_distances > 0])
+  close_cluster_indices <- which(cluster_distances == min_distance, arr.ind = TRUE)
+  close_cluster1 <- close_cluster_indices[1, 1]
+  close_cluster2 <- close_cluster_indices[1, 2]
 
   # ToDo: Merge the two closest clusters
 
