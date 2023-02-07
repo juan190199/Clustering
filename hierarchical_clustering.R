@@ -77,7 +77,11 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     close_cluster1 <- close_cluster_indices[1, 1]
     close_cluster2 <- close_cluster_indices[1, 2]
 
-
+    # Merge the two closest clusters
+    clusters[[close_cluster1]] <- c(clusters[[close_cluster1]], clusters[[close_cluster2]])
+    clusters <- clusters[-close_cluster2]
+    cluster_distances[close_cluster1, ] <- 0
+    cluster_distances[, close_cluster1] <- 0
   }
 }
 
