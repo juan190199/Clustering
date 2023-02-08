@@ -11,9 +11,19 @@
 
 # Agglomerative Hierarchical Clustering in R
 
-# Helper function to calculate euclidean distance between two points
-euclidean_distance <- function(x, y) {
-  sqrt(sum((x - y)^2))
+set.seed(101)
+
+# Helper function to calculate euclidean distance between two matrices
+euclidean_distance_matrix <- function(mat1, mat2)
+{
+  n1 <- nrow(mat1)
+  n2 <- nrow(mat2)
+  dists <- matrix(0, n1, n2)
+  for (i in 1:n1) {
+    diffs <- mat2 - mat1[i, ]
+    dists[i, ] <- sqrt(rowSums(diffs^2))
+  }
+  return(dists)
 }
 
 # Main function to perform Agglomerative Hierarchical Clustering
@@ -23,7 +33,7 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
   diag(cluster_distances) <- rep(1e10, n)  # Set diagonal to high value to avoid self-pairing
 
   # Initialize each data point as a single-point cluster
-  clusters <- list(1:n)
+  clusters <- c(1:n)
 
   # Define function for linkage method
   linkage_fun <- switch(
@@ -47,7 +57,7 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     "centroid" = function (cluster1, cluster2) {
       centroid1 <- apply(X[cluster1, ], 2, mean)
       centroid2 <- apply(X[cluster2, ], 2, mean)
-      return(euclidean_distance(centroid1, centroid2))
+      return(euclidean_distance_matrix(centroid1, centroid2))
     },
     "ward" = function (cluster1, cluster2) {
       sse1 <- sum(sapply(cluster1, function(x) {
@@ -67,7 +77,7 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     # Calculate pairwise distances between clusters
     for (i in 1:(length(clusters) - 1)) {
       for (j in (i + 1):length(clusters)) {
-        cluster_distances[i, j] <- linkage_fun(clusters[[i]], clusters[[j]])
+        cluster_distances[i, j] <- linkage_fun(X[clusters[[i]], ], X[clusters[[j]], ])
       }
     }
 
