@@ -39,19 +39,19 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
   linkage_fun <- switch(
     linkage_fun,
     "single" = function (cluster1, cluster2) {
-      dists <- apply(expand.grid(cluster1, cluster2), 1, function(x) euclidean_distance(X[x[1], ], X[x[2], ]))
+      dists <- euclidean_distance_matrix(cluster1, cluster2)
       return(min(dists))
     },
     "complete" = function (cluster1, cluster2) {
-      dists <- apply(expand.grid(cluster1, cluster2), 1, function(x) euclidean_distance(X[x[1], ], X[x[2], ]))
+      dists <- euclidean_distance_matrix(cluster1, cluster2)
       return(max(dists))
     },
     "average" = function (cluster1, cluster2) {
-      dists <- apply(expand.grid(cluster1, cluster2), 1, function(x) euclidean_distance(X[x[1], ], X[x[2], ]))
+      dists <- euclidean_distance_matrix(cluster1, cluster2)
       return(mean(dists))
     },
     "median" = function (cluster1, cluster2) {
-      dists <- apply(expand.grid(cluster1, cluster2), 1, function(x) euclidean_distance(X[x[1], ], X[x[2], ]))
+      dists <- euclidean_distance_matrix(cluster1, cluster2)
       return(median(dists))
     },
     "centroid" = function (cluster1, cluster2) {
@@ -77,7 +77,7 @@ agglomerative_hierarchical_clustering <- function(X, linkage_fun) {
     # Calculate pairwise distances between clusters
     for (i in 1:(length(clusters) - 1)) {
       for (j in (i + 1):length(clusters)) {
-        cluster_distances[i, j] <- linkage_fun(X[clusters[[i]], ], X[clusters[[j]], ])
+        cluster_distances[i, j] <- linkage_fun(X[clusters[[i]], , drop=FALSE], X[clusters[[j]], , drop=FALSE])
       }
     }
 
