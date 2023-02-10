@@ -20,6 +20,16 @@ complete_link <- function(ci, cj) {
   })))
 }
 
+average_link <- function(ci, cj) {
+  distances <- sapply(ci, function(vi) {
+    sapply(cj, function(vj) {
+      distance(vi, vj)
+    })
+  })
+  return(mean(distances))
+}
+
+
 get_distance_measure <- function(linkage_fun) {
   if (linkage_fun == "single") {
     return(single_link)
