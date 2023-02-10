@@ -1,5 +1,9 @@
 library(dplyr)
 
+distance <- function(p, q) {
+  return(sqrt(sum((p - q)^2)))
+}
+
 
 
 get_distance_measure <- function(linkage_fun) {
