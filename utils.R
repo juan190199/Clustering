@@ -29,6 +29,14 @@ average_link <- function(ci, cj) {
   return(mean(distances))
 }
 
+wards_minimum_variance_link <- function(ci, cj) {
+  n <- length(ci) + length(cj)
+  centroid_ci <- colMeans(ci)
+  centroid_cj <- colMeans(cj)
+  centroid_new_cluster <- (n / (length(ci) + length(cj))) * (centroid_ci + centroid_cj)
+  return(distance_r(centroid_ci, centroid_new_cluster) + distance_r(centroid_cj, centroid_new_cluster))
+}
+
 
 get_distance_measure <- function(linkage_fun) {
   if (linkage_fun == "single") {
