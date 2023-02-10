@@ -41,5 +41,12 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         return(new_clusters)
     }
 
+    run_algorithm <- function() {
+        while (length(clusters) > K) {
+            closest_clusters <- find_closest_clusters()
+            clusters <<- merge_and_form_new_clusters(closest_clusters[1], closest_clusters[2])
+        }
+    }
+
 
 }
