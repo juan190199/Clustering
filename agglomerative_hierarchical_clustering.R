@@ -48,5 +48,16 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         }
     }
 
+    print <- function() {
+        for (id in 1:length(clusters)) {
+            cat("Cluster: ", id, "\n")
+            for (point in clusters[[id]]) {
+                cat("    ", point, "\n")
+            }
+        }
+    }
 
+    run_algorithm()
+    print()
+    return(clusters)
 }
