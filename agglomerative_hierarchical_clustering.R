@@ -27,5 +27,19 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         return(closest_clusters)
     }
 
+    merge_and_form_new_clusters <- function(ci_id, cj_id) {
+        new_clusters <- list()
+
+        for (cluster_id in 1:length(clusters)) {
+            if ((cluster_id == ci_id) | (cluster_id == cj_id)) {
+                next
+            }
+            new_clusters[[length(new_clusters) + 1]] <- clusters[[cluster_id]]
+        }
+
+        new_clusters[[length(new_clusters) + 1]] <- c(clusters[[ci_id]], clusters[[cj_id]])
+        return(new_clusters)
+    }
+
 
 }
