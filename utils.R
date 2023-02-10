@@ -4,7 +4,21 @@ distance <- function(p, q) {
   return(sqrt(sum((p - q)^2)))
 }
 
+single_link <- function(ci, cj) {
+  return(min(sapply(ci, function(vi) {
+    sapply(cj, function(vj) {
+      distance(vi, vj)
+    })
+  })))
+}
 
+complete_link <- function(ci, cj) {
+  return(max(sapply(ci, function(vi) {
+    sapply(cj, function(vj) {
+      distance(vi, vj)
+    })
+  })))
+}
 
 get_distance_measure <- function(linkage_fun) {
   if (linkage_fun == "single") {
