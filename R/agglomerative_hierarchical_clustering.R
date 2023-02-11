@@ -1,3 +1,11 @@
+## Agglomerative hierarchical clustering
+## Linkage functions used:
+## 1. Single linkage function
+## 2. Complete linkage function
+## 3. Average linkage function
+## 4. Wards minimum variance linkage function
+## 5. Median linkage function
+
 source("utils.R")
 
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
