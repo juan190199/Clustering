@@ -1,5 +1,16 @@
+### R files ###
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 Clustering.Rproj
+
+### Pycharm ###
+.idea/
+
+### Django ###
+*.log
+__pycache__/
+
+## macOS ##
+*.DS_Store
