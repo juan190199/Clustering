@@ -6,14 +6,18 @@
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
 
-source("utils.R")
+source("R/utils.R")
 
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     N <- nrow(data)
     measure <- get_distance_measure(linkage_fun)
 
     init_clusters <- function() {
-        return(lapply(1:N, function(i) data[i, ]))
+        clusters <- list()
+        for(i in seq(N)){
+            clusters[[i]] <- list(data[i, ])
+        }
+        return(clusters)
     }
     clusters <- init_clusters()
 
@@ -56,16 +60,23 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         }
     }
 
-    print <- function() {
+    print_ <- function() {
         for (id in 1:length(clusters)) {
             cat("Cluster: ", id, "\n")
             for (point in clusters[[id]]) {
+                # print(point)
                 cat("    ", point, "\n")
             }
         }
     }
 
     run_algorithm()
-    print()
+    print_()
     return(clusters)
 }
+
+
+set.seed(101)
+
+X <- matrix(runif(20), ncol=2)
+result <- agglomerative_hierarchical_clustering(X, 2,"single")
