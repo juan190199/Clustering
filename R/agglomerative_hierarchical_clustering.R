@@ -74,9 +74,3 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     print_()
     return(clusters)
 }
-
-
-set.seed(101)
-
-X <- matrix(runif(20), ncol=2)
-result <- agglomerative_hierarchical_clustering(X, 2,"single")
