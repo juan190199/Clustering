@@ -1,0 +1,32 @@
+---
+title: "Testing agglomerative hierarchical clustering functionalities with iris data set"
+output: html_notebook
+---
+
+Importing data
+```{r}
+library(datasets)
+
+data(iris)
+head(iris)
+summary(iris)
+```
+
+Visualizing data
+```{r}
+library(dplyr)
+plot(iris)
+```
+
+```{r}
+# Standardize data
+iris_standardized <- data.matrix(scale(iris[1:4]))
+head(iris_standardized)
+summary(iris_standardized)
+```
+Agglomerative Hierarchical Clustering
+```{r}
+source("R/agglomerative_hierarchical_clustering.R")
+
+result <- agglomerative_hierarchical_clustering(iris_standardized, 2, "single")
+```
