@@ -6,14 +6,14 @@ Date: 2023-02-11
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Authors@R: 
   c(
+    person("Juan", "Da Silva", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Kevin", "Klein", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Paris", "Huth", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
     person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
   )
 Description: At the moment not much, but it will include some cool Clustering methods.
 License: MIT + file LICENSE
