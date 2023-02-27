@@ -20,6 +20,7 @@ dista <- function(x,y) {
 #'  optimal state has been reached, the function will exit.
 #'@examples
 #' kmedoid(iris[3:4],3,5)
+#' @export
 kmedoid <- function(data, k=1, iter=1){
     # create a matrix with the distance between every point of the data set
     # prime a matrix of the correct size
