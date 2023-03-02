@@ -63,9 +63,9 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     print_ <- function() {
         for (id in 1:length(clusters)) {
             cat("Cluster: ", id, "\n")
-            idx <- sapply(clusters[[id]], function(x) which(apply(X, 1, function(y) all(y == x))))
+            idx <- sapply(clusters[[id]], function(x) which(apply(data, 1, function(y) all(y == x))))
             for (i in 1:length(clusters[[id]])) {
-                cat("\t", idx[[i]], "\t", clusters[[id]][[i]], "\n")
+                cat(idx[[i]], "\t", clusters[[id]][[i]], "\n")
             }
         }
     }
@@ -77,4 +77,8 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 
 set.seed(101)
 X <- matrix(runif(20), ncol = 2)
-res <- agglomerative_hierarchical_clustering(X, 2, 'single')
+X_scaled <- scale(X)
+res <- agglomerative_hierarchical_clustering(X_scaled, 2, 'single')
+
+dd <- dist(scale(X), method = "euclidean")
+hc <- hclust(dd, method = "single")
