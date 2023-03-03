@@ -1,7 +1,3 @@
-calculate_laplacian_matrix <- function(){
-
-}
-
 calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
   # Check that Cluster Data has the right type
   source("R/utils_spectral.R")
@@ -53,8 +49,31 @@ calculate_diagonal_matrix <- function(mercer_kernel){
   return(diagonal_matrix)
 }
 
+calculate_eigenvectors <- function(matrix){
+  eigen <- eigen(matrix, symmetric=TRUE)
+  eigen_vectors <- reverse(eigen$vectors)
+
+  # normalize
+  num_eigenvec <- nrow(eigen_vectors)
+  for(i in seq(to=num_eigenvec) ) {
+    norm <- norm(eigen_vectors[, i], type="F")
+    if( norm != 1){
+      eigen_vectors[, i] <- 1/norm * eigen_vectors[, i]
+    }
+  }
+
+  return(eigen_vectors)
+}
 
 
-spectral_clustering <- function(){
+spectral_clustering <- function(data, ...){
+  mercer_kernel <- calculate_mercer_kernel(data, ...)
+  diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
+  laplacian_matrix <- diagonal_matrix - mercer_kernel
 
+  d_square <- diagonal_matrix**(-1/2)
+  d_square[d_square == Inf] <- 0
+  eigenvectors <- calculate_eigenvectors(
+    d_square %*% laplacian_matrix %*% d_square
+    )
 }
