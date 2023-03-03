@@ -11,6 +11,8 @@ source("R/utils.R")
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     N <- nrow(data)
     measure <- get_distance_measure(linkage_fun)
+    order <- c()
+    labels <- c()
 
     init_clusters <- function() {
         clusters <- list()
@@ -64,7 +66,9 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         for (id in 1:length(clusters)) {
             cat("Cluster: ", id, "\n")
             idx <- sapply(clusters[[id]], function(x) which(apply(data, 1, function(y) all(y == x))))
+            order <<- c(order, c(idx))
             for (i in 1:length(clusters[[id]])) {
+                labels[idx[[i]]] <<- id
                 cat(idx[[i]], "\t", clusters[[id]][[i]], "\n")
             }
         }
@@ -72,13 +76,15 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 
     run_algorithm()
     print_()
-    return(clusters)
+
+    output <- list(order = order, clusters = clusters, method = linkage_fun, labels = labels)
+    return(output)
 }
 
-set.seed(101)
-X <- matrix(runif(20), ncol = 2)
-X_scaled <- scale(X)
-res <- agglomerative_hierarchical_clustering(X_scaled, 2, 'single')
+# set.seed(101)
+# X <- matrix(runif(20), ncol = 2)
+# X_scaled <- scale(X)
+# res <- agglomerative_hierarchical_clustering(X_scaled, 2, 'single')
 
-dd <- dist(scale(X), method = "euclidean")
-hc <- hclust(dd, method = "single")
+# dd <- dist(scale(X), method = "euclidean")
+# hc <- hclust(dd, method = "single")
