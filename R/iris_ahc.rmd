@@ -20,13 +20,37 @@ plot(iris)
 
 ```{r}
 # Standardize data
-iris_standardized <- data.matrix(scale(iris[1:4]))
-head(iris_standardized)
-summary(iris_standardized)
+iris_std <- data.matrix(scale(iris[, 1:4]))
+head(iris_std)
+summary(iris_std)
 ```
 Agglomerative Hierarchical Clustering
 ```{r}
 source("R/agglomerative_hierarchical_clustering.R")
 
-result <- agglomerative_hierarchical_clustering(iris_standardized, 2, "single")
+result <- agglomerative_hierarchical_clustering(iris_std, 3, "complete")
+```
+```{r}
+# Perform PCA on the iris dataset
+iris_pca <- prcomp(iris[,1:4], scale = TRUE)
+iris_pca_2d <- iris_pca$x[, 1:2]
+```
+```{r}
+# Plot the iris data in two dimensions using the first two principal components
+plot(iris_pca_2d, col = result$labels, pch = 19, xlab = "PC1", ylab = "PC2")
+legend("bottomright", legend = unique(result$labels), col = 1:length(unique(result$labels)), pch = 19)
+```
+```{r}
+iris_hclust <- hclust(dist(iris[,1:4]))
+iris_clusters <- cutree(iris_hclust, k = 3)
+```
+```{r}
+# Perform PCA on the iris dataset using the resulting clusters
+iris_pca <- prcomp(iris[,1:4], scale = TRUE, center = TRUE)
+iris_pca_2d <- iris_pca$x[,1:2]
+```
+```{r}
+# Plot the iris data in two dimensions using the first two principal components, colored by cluster
+plot(iris_pca_2d, col = iris_clusters, pch = 19, xlab = "PC1", ylab = "PC2")
+legend("bottomright", legend = unique(iris_clusters), col = 1:length(unique(iris_clusters)), pch = 19)
 ```
