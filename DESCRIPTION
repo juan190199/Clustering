@@ -1,9 +1,22 @@
 Package: Clustering
 Type: Package
 Title: What the package does (short line)
-Version: 1.0
+Version: 0.0.0.9000
 Date: 2023-02-11
-Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Authors@R: 
+  c(
+    person("Juan", "Da Silva", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Kevin", "Klein", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Paris", "Huth", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+  )
+Description: At the moment not much, but it will include some cool Clustering methods.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
