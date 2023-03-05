@@ -6,6 +6,10 @@
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
 
+# ToDo: Check if all linkage functions are working
+# ToDo: Create sanity checks
+# ToDo: Create test functions
+
 source("R/utils.R")
 
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
