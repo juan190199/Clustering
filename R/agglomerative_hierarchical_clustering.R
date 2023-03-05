@@ -32,7 +32,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         for (i in 1:(length(clusters_ids) - 1)) {
             for (j in (i+1):length(clusters_ids)) {
                 dist <- measure(clusters[[clusters_ids[i]]], clusters[[clusters_ids[j]]])
-                if (dist < min_dist) {
+                if (dist <= min_dist) {
                     min_dist <- dist
                     closest_clusters <- c(clusters_ids[i], clusters_ids[j])
                 }
@@ -81,10 +81,29 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     return(output)
 }
 
-# set.seed(101)
-# X <- matrix(runif(20), ncol = 2)
-# X_scaled <- scale(X)
-# res <- agglomerative_hierarchical_clustering(X_scaled, 2, 'single')
-
-# dd <- dist(scale(X), method = "euclidean")
-# hc <- hclust(dd, method = "single")
+# library(datasets)
+# data(iris)
+#
+# # Standardize data
+# iris_std <- data.matrix(scale(iris[, 1:4]))
+#
+# result <- agglomerative_hierarchical_clustering(iris_std, 3, "complete")
+#
+# # Perform PCA on the iris dataset
+# iris_pca <- prcomp(iris[, 1:4], scale = TRUE, center = TRUE)
+# iris_pca_2d <- iris_pca$x[, 1:2]
+#
+# # Plot the iris data in two dimensions using the first two principal components
+# plot(iris_pca_2d, col = result$labels, pch = 19, xlab = "PC1", ylab = "PC2")
+# legend("bottomright", legend = unique(result$labels), col = 1:length(unique(result$labels)), pch = 19)
+#
+# # Plot the iris data in two dimensions using the first two principal components
+# plot(iris_pca_2d, col = iris$Species, pch = 19, xlab = "PC1", ylab = "PC2")
+# legend("bottomright", legend = unique(iris$Species), col = 1:length(unique(iris$Species)), pch = 19)
+#
+# iris_hclust <- hclust(dist(iris_std[, 1:4]))
+# iris_clusters <- cutree(iris_hclust, k = 3)
+#
+# # Plot the iris data in two dimensions using the first two principal components, colored by cluster
+# plot(iris_pca_2d, col = iris_clusters, pch = 19, xlab = "PC1", ylab = "PC2")
+# legend("bottomright", legend = unique(iris_clusters), col = 1:length(unique(iris_clusters)), pch = 19)
