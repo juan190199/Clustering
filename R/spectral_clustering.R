@@ -68,7 +68,15 @@ calculate_eigenvectors <- function(matrix){
 }
 
 
-spectral_clustering <- function(data, num, ...){
+spectral_clustering <- function(data, num_clusters, ...){
+  num_clusters <- as.integer(num_clusters)
+  num_datapoints <- nrow(data)
+  # check input data, data gets checked in subfunctions
+  stopifnot("Number of clusters has to be smaller than the number of datapoints"=
+              num_clusters <= num_datapoints)
+  stopifnot("Number of clusters have to be taller than one."=
+              num_clusters > 1)
+
   mercer_kernel <- calculate_mercer_kernel(data, ...)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
@@ -80,12 +88,12 @@ spectral_clustering <- function(data, num, ...){
     )
 
   # calculate the betas from Def. 10.50 Stefan Richter
-  num_datapoints <- nrow(data)
   betas <- apply(
-    eigenvectors[, 2:num_datapoints],
+    eigenvectors[, seq(from=2, to=num_clusters+1)],
     2,
     function(x){
-      num_datapoints**(-1/2)*d_nsquare*x
+      res_vec <- num_datapoints**(-1/2)*d_nsquare*x
+      return(transpose(res_vec))
     }
   )
 
@@ -94,4 +102,4 @@ spectral_clustering <- function(data, num, ...){
 }
 
 m <- matrix(1:4, nrow=2)
-spectral_clustering(m)
+spectral_clustering(m, 1)
