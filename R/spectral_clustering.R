@@ -51,7 +51,7 @@ calculate_diagonal_matrix <- function(mercer_kernel){
 
 calculate_eigenvectors <- function(matrix){
   # import utils
-  source("R/utils_spectral.R")
+  source("R/utils.R")
 
   eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors
   # put eigenvectors in ascending order
@@ -60,7 +60,6 @@ calculate_eigenvectors <- function(matrix){
   # normalize
   for(i in seq(to=ncol(eigen_vectors)) ) {
     norm <- euc_norm(eigen_vectors[, i])
-    print(str(norm))
     if( norm != 1){
       eigen_vectors[, i] <- 1/norm * eigen_vectors[, i]
     }
@@ -69,16 +68,29 @@ calculate_eigenvectors <- function(matrix){
 }
 
 
-spectral_clustering <- function(data, ...){
+spectral_clustering <- function(data, num, ...){
   mercer_kernel <- calculate_mercer_kernel(data, ...)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
 
-  d_square <- diagonal_matrix**(-1/2)
-  d_square[d_square == Inf] <- 0
+  d_nsquare <- diagonal_matrix**(-1/2)
+  d_nsquare[d_nsquare == Inf] <- 0
   eigenvectors <- calculate_eigenvectors(
-    d_square %*% laplacian_matrix %*% d_square
+    d_nsquare %*% laplacian_matrix %*% d_nsquare
     )
+
+  # calculate the betas from Def. 10.50 Stefan Richter
+  num_datapoints <- nrow(data)
+  betas <- apply(
+    eigenvectors[, 2:num_datapoints],
+    2,
+    function(x){
+      num_datapoints**(-1/2)*d_nsquare*x
+    }
+  )
+
+  return(betas)
+
 }
 
 m <- matrix(1:4, nrow=2)
