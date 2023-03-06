@@ -1,13 +1,24 @@
 library(dplyr)
 
-distance <- function(p, q) {
+euc_dist <- function(p, q) {
+  # Check input data
+  stopifnot("Input data has to be a numeric vector"=
+              is.numeric(p) && is.vector(p) && is.numeric(q) && is.vector(q))
+  stopifnot("Vectors have to have the same length"=
+              length(p) == length(q))
+
   return(sqrt(sum((p - q)^2)))
 }
+
+euc_norm <- function(x){
+  euc_dist(x, rep(0, length(x)))
+}
+
 
 single_link <- function(ci, cj) {
   return(min(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      distance(vi, vj)
+      euc_dist(vi, vj)
     })
   })))
 }
@@ -15,7 +26,7 @@ single_link <- function(ci, cj) {
 complete_link <- function(ci, cj) {
   return(max(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      distance(vi, vj)
+      euc_dist(vi, vj)
     })
   })))
 }
@@ -23,7 +34,7 @@ complete_link <- function(ci, cj) {
 average_link <- function(ci, cj) {
   distances <- sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      distance(vi, vj)
+      euc_dist(vi, vj)
     })
   })
   return(mean(distances))
@@ -41,7 +52,7 @@ median_link <- function(ci, cj) {
   n <- length(ci) + length(cj)
   centroid_ci <- colMeans(ci)
   centroid_cj <- colMeans(cj)
-  return(distance(centroid_ci, centroid_cj))
+  return(euc_dist(centroid_ci, centroid_cj))
 }
 
 get_distance_measure <- function(linkage_fun) {

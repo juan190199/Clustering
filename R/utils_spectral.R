@@ -15,19 +15,3 @@ check_kernel_properties <- function(kernel){
   warning("Keep in mind, kernel function should be continuous.
           No option to check that in the coding.")
 }
-
-euc_dist <- function(x, y){
-  # Check input data
-  stopifnot("Input data has to be a numeric vector"=
-              is.numeric(x) && is.vector(x) && is.numeric(y) && is.vector(y))
-  stopifnot("Vectors have to have the same length"=
-              length(x) == length(y) )
-  distance <- dist(rbind(x,y))
-  distance <- distance[1]
-  attr(distance)
-  return(distance[1])
-}
-
-euc_norm <- function(x){
-  euc_dist(x, rep(0, length(x)))
-}
