@@ -9,7 +9,7 @@ calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
       if(is.null(optional_params$gamma) ){
         gamma <- 10
       }
-      return(exp(- gamma * distance(x,y)))
+      return(exp(- gamma * euc_dist(x, y)))
     }
   }
   else if(kernel_type == "test"){
@@ -50,18 +50,21 @@ calculate_diagonal_matrix <- function(mercer_kernel){
 }
 
 calculate_eigenvectors <- function(matrix){
-  eigen <- eigen(matrix, symmetric=TRUE)
-  eigen_vectors <- reverse(eigen$vectors)
+  # import utils
+  source("R/utils_spectral.R")
+
+  eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors
+  # put eigenvectors in ascending order
+  eigen_vectors <- eigen_vectors[, ncol(eigen_vectors):1]
 
   # normalize
-  num_eigenvec <- nrow(eigen_vectors)
-  for(i in seq(to=num_eigenvec) ) {
-    norm <- norm(eigen_vectors[, i], type="F")
+  for(i in seq(to=ncol(eigen_vectors)) ) {
+    norm <- euc_norm(eigen_vectors[, i])
+    print(str(norm))
     if( norm != 1){
       eigen_vectors[, i] <- 1/norm * eigen_vectors[, i]
     }
   }
-
   return(eigen_vectors)
 }
 
@@ -77,3 +80,6 @@ spectral_clustering <- function(data, ...){
     d_square %*% laplacian_matrix %*% d_square
     )
 }
+
+m <- matrix(1:4, nrow=2)
+spectral_clustering(m)
