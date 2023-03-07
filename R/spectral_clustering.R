@@ -67,16 +67,7 @@ calculate_eigenvectors <- function(matrix){
   return(eigen_vectors)
 }
 
-
-spectral_clustering <- function(data, num_clusters, ...){
-  num_clusters <- as.integer(num_clusters)
-  num_datapoints <- nrow(data)
-  # check input data, data gets checked in subfunctions
-  stopifnot("Number of clusters has to be smaller than the number of datapoints"=
-              num_clusters <= num_datapoints)
-  stopifnot("Number of clusters have to be taller than one."=
-              num_clusters > 1)
-
+calculate_k_projection <- function(data, k){
   mercer_kernel <- calculate_mercer_kernel(data, ...)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
@@ -85,19 +76,31 @@ spectral_clustering <- function(data, num_clusters, ...){
   d_nsquare[d_nsquare == Inf] <- 0
   eigenvectors <- calculate_eigenvectors(
     d_nsquare %*% laplacian_matrix %*% d_nsquare
-    )
+  )
 
   # calculate the betas from Def. 10.50 Stefan Richter
   betas <- apply(
-    eigenvectors[, seq(from=2, to=num_clusters+1)],
+    eigenvectors[, seq(from=2, to=k+1)],
     2,
     function(x){
       res_vec <- num_datapoints**(-1/2)*d_nsquare*x
       return(transpose(res_vec))
     }
   )
-
   return(betas)
+}
+
+
+spectral_clustering <- function(data, num_clusters, k, ...){
+  num_clusters <- as.integer(num_clusters)
+  num_datapoints <- nrow(data)
+  # check input data, data gets checked in subfunctions
+  stopifnot("Number of clusters has to be smaller than the number of datapoints"=
+              num_clusters <= num_datapoints)
+  stopifnot("Number of clusters have to be taller than one."=
+              num_clusters > 1)
+
+  alphas <- calculate_k_projection(data, k)
 
 }
 
