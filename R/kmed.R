@@ -18,14 +18,33 @@ dista <- function(x,y) {
 #'@param k The number of medoids or clusters to be computed.
 #'@param iter The number of iterations the optimisation should go through. If an
 #'  optimal state has been reached, the function will exit.
+#'@return A list containing the following elements:
+#'- clusters: a vector of integers indicating the cluster assignment of each
+#'  data point.
+#'- medoids: a vector of integers indicating the index of the medoid for each
+#'  cluster.
+#'- cost: a numeric value indicating the total sum of distances within each
+#'  cluster to its central medoid.
+#'
+#' Note: This implementation of k-medoids does not work well with small data sets.
+
 #'@examples
 #' kmedoid(iris[3:4],3,5)
-#' @export
+#'@export
 kmedoid <- function(data, k=1, iter=1){
+    stopifnot('Number of medoids k has to be greater than 0!'= k > 0)
+    stopifnot('NUmber of iterations has to be greater than 0!'= iter > 0)
+    if(k >= nrow(data)){
+        cost <- 0
+        medoids <- 1:nrow(data)
+        clusters <- 1:nrow(data)
+        warning('Number of medoids greater or equal to the number of data points!')
+        return(list(clusters = clusters, medoids = medoids, cost = cost))
+    }
     # create a matrix with the distance between every point of the data set
     # prime a matrix of the correct size
     dist_mat <- matrix(0,nrow(data),nrow(data))
-    # distance calculation (although across would be more elegant, it's not more
+    # distance calculation (although across() would be more elegant, it's not more
     # efficient)
     for (i in 1:nrow(data)){
         for (j in 1:i) {
@@ -70,9 +89,14 @@ kmedoid <- function(data, k=1, iter=1){
         # Update medoids
         for (j in 1:k) {
             cluster_j <- which(clusters == j)
-            medoid_distances <- apply(dist_mat[cluster_j, cluster_j], 2, sum)
-            medoids[j] <- cluster_j[which.min(medoid_distances)]
+            if (length(cluster_j) == 0) {
+                medoids[j] <- sample(1:nrow(data), 1) # set medoid to a random point
+            } else {
+                medoid_distances <- apply(dist_mat[cluster_j, cluster_j, drop=FALSE], 2, sum)
+                medoids[j] <- cluster_j[which.min(medoid_distances)]
+            }
         }
+
 
         # Calculate new cost
         new_cost <- 0
@@ -84,7 +108,7 @@ kmedoid <- function(data, k=1, iter=1){
 
         # Check for stable state
         if (new_cost == cost) {
-            print('done')# todo remove
+            print('Reached stable configuration. Terminating early.')# todo remove maybe?
             break
         } else {
             cost <- new_cost
@@ -94,7 +118,3 @@ kmedoid <- function(data, k=1, iter=1){
     # Return results
     return(list(clusters = clusters, medoids = medoids, cost = cost))
 }
-
-# remove done print
-# which min can lead to error if not unique
-# implement recomendet set size

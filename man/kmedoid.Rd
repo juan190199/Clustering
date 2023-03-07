@@ -14,6 +14,19 @@ kmedoid(data, k = 1, iter = 1)
 \item{iter}{The number of iterations the optimisation should go through. If an
 optimal state has been reached, the function will exit.}
 }
+\value{
+A list containing the following elements:
+\itemize{
+\item clusters: a vector of integers indicating the cluster assignment of each
+data point.
+\item medoids: a vector of integers indicating the index of the medoid for each
+cluster.
+\item cost: a numeric value indicating the total sum of distances within each
+cluster to its central medoid.
+}
+
+Note: This implementation of k-medoids does not work well with small data sets.
+}
 \description{
 \code{kmedoid()} utilizes a PAM algorithm (partitioning around medoids) to cluster
 data. k-medoids aim to minimize the total sum of distances within each cluster
