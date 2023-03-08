@@ -26,6 +26,9 @@ euc_norm <- function(x) {
   dist_func(x, rep(0, length(x)))
 }
 
+############################
+##    Linkage functions   ##
+############################
 
 single_link <- function(ci, cj) {
   return(min(sapply(ci, function(vi) {

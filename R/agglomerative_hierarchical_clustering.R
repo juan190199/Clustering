@@ -6,7 +6,6 @@
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
 
-# ToDo: Create sanity checks
 # ToDo: Check if all linkage functions are working
 
 source("R/utils.R")
