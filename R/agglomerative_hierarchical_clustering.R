@@ -6,6 +6,7 @@
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
 
+# ToDo: Create sanity checks
 # ToDo: Check if all linkage functions are working
 # ToDo: Create sanity checks
 # ToDo: Create test functions
@@ -17,6 +18,13 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     measure <- get_distance_measure(linkage_fun)
     order <- c()
     labels <- c()
+
+    sanity_checks <- function() {
+        # Check K is not bigger than the total number of data points
+        if (K > N) {
+            stop("Number of clusters asked is greater than number of data points")
+        }
+    }
 
     init_clusters <- function() {
         clusters <- list()
@@ -78,6 +86,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
         }
     }
 
+    sanity_checks()
     run_algorithm()
     print_()
 
