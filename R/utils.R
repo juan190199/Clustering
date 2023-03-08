@@ -1,17 +1,29 @@
 library(dplyr)
 
-euc_dist <- function(p, q) {
-  # Check input data
-  stopifnot("Input data has to be a numeric vector"=
-              is.numeric(p) && is.vector(p) && is.numeric(q) && is.vector(q))
-  stopifnot("Vectors have to have the same length"=
-              length(p) == length(q))
 
-  return(sqrt(sum((p - q)^2)))
+dist_func <- function(p, q, type = "euclidean") {
+  # Check input data
+  stopifnot(is.numeric(p) && is.vector(p) &&
+            is.numeric(q) && is.vector(q))
+  stopifnot(length(p) == length(q))
+
+  # Calculate distance based on type
+  if (type == "euclidean") {
+    distance <- sqrt(sum((p - q)^2))
+  } else if (type == "manhattan") {
+    distance <- sum(abs(p - q))
+  } else if (type == "minkowski") {
+    p_val <- 3 # Change to desired p-value
+    distance <- (sum(abs(p - q)^p_val))^(1/p_val)
+  } else {
+    stop("Invalid distance type. Choose 'euclidean', 'manhattan', or 'minkowski'.")
+  }
+
+  return(distance)
 }
 
-euc_norm <- function(x){
-  euc_dist(x, rep(0, length(x)))
+euc_norm <- function(x) {
+  dist_func(x, rep(0, length(x)))
 }
 
 
