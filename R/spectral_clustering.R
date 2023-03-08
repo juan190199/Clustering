@@ -1,5 +1,6 @@
 calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
   # Check that Cluster Data has the right type
+  source("R/utils.R")
   source("R/utils_spectral.R")
   check_input_data(data)
 
@@ -9,7 +10,10 @@ calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
       if(is.null(optional_params$gamma) ){
         gamma <- 10
       }
-      return(exp(- gamma * distance(x,y)))
+      else{
+        gamma <- optional_params$gamma
+      }
+      return(exp(- gamma * euc_dist(x, y)))
     }
   }
   else if(kernel_type == "test"){
@@ -50,30 +54,81 @@ calculate_diagonal_matrix <- function(mercer_kernel){
 }
 
 calculate_eigenvectors <- function(matrix){
-  eigen <- eigen(matrix, symmetric=TRUE)
-  eigen_vectors <- reverse(eigen$vectors)
+  # import utils
+  source("R/utils.R")
+
+  eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors
+  # put eigenvectors in ascending order
+  eigen_vectors <- eigen_vectors[, ncol(eigen_vectors):1]
 
   # normalize
-  num_eigenvec <- nrow(eigen_vectors)
-  for(i in seq(to=num_eigenvec) ) {
-    norm <- norm(eigen_vectors[, i], type="F")
+  for(i in seq(to=ncol(eigen_vectors)) ) {
+    norm <- euc_norm(eigen_vectors[, i])
     if( norm != 1){
       eigen_vectors[, i] <- 1/norm * eigen_vectors[, i]
     }
   }
-
   return(eigen_vectors)
 }
 
-
-spectral_clustering <- function(data, ...){
+calculate_k_projection <- function(data, dim_k, ...){
   mercer_kernel <- calculate_mercer_kernel(data, ...)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
 
-  d_square <- diagonal_matrix**(-1/2)
-  d_square[d_square == Inf] <- 0
+  d_nsquare <- diagonal_matrix**(-1/2)
+  d_nsquare[d_nsquare == Inf] <- 0
   eigenvectors <- calculate_eigenvectors(
-    d_square %*% laplacian_matrix %*% d_square
-    )
+    d_nsquare %*% laplacian_matrix %*% d_nsquare
+  )
+
+  num_datapoints <- nrow(data)
+  # calculate the betas from Def. 10.50 Stefan Richter
+  betas <- apply(
+    eigenvectors[, seq(from=2, to=dim_k+1), drop=FALSE],
+    2,
+    function(x){
+      res_vec <- num_datapoints**(-1/2)*d_nsquare %*% x
+      return(res_vec)
+    }
+  )
+  return(betas)
 }
+
+#'Implementation of the spectral clustering algorithm.
+#'
+#'`spectral_clustering` is a clustering algorithm that emphasizes the distances
+#'data.
+#'
+#'@param data A matrix with two columns of numeric data.
+#'Each row represents one data point. The columns are the dimensions.
+#'@param num_clusters The number of clusters, a numeric value larger than one.
+#'@param dim_k The dimension the data should be projected into.
+#'@param cluster_fun A cluster function that runs on the vecors retrieved
+#' from the projection into R^`dim_k`
+#'@return The return type of `cluster_fun`
+spectral_clustering <- function(
+    data, num_clusters, dim_k,
+    ...){
+  num_clusters <- as.integer(num_clusters)
+  dim_k <- as.integer(dim_k)
+  num_datapoints <- nrow(data)
+  # check input data, data gets checked in subfunctions
+  stopifnot("Number of clusters has to be smaller than the number of datapoints"=
+              num_clusters <= num_datapoints)
+  stopifnot("Number of clusters have to be taller than one."=
+              num_clusters > 1)
+  stopifnot("The dimension of the projection image has to be at least one."=
+              num_clusters > 0)
+  stopifnot("The dimension of the projection image has to be smaller than the number of clusters"=
+              dim_k < num_clusters)
+
+  alphas <- calculate_k_projection(data, dim_k=dim_k, ...)
+
+  source("R/kmed.R")
+  kmedoid(data)
+
+}
+
+m <- matrix(c(1,3, 1,4,2,4,2,5,2,6,3,4,4,5,5,6), ncol=2, byrow=TRUE)
+print(spectral_clustering(m, dim_k=1, num_clusters = 2, gamma=1/20))
