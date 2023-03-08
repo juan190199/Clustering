@@ -33,7 +33,7 @@ euc_norm <- function(x) {
 single_link <- function(ci, cj) {
   return(min(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      euc_dist(vi, vj)
+      dist_func(vi, vj)
     })
   })))
 }
@@ -41,7 +41,7 @@ single_link <- function(ci, cj) {
 complete_link <- function(ci, cj) {
   return(max(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      euc_dist(vi, vj)
+      dist_func(vi, vj)
     })
   })))
 }
@@ -49,7 +49,7 @@ complete_link <- function(ci, cj) {
 average_link <- function(ci, cj) {
   distances <- sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-      euc_dist(vi, vj)
+      dist_func(vi, vj)
     })
   })
   return(mean(distances))
@@ -67,7 +67,7 @@ median_link <- function(ci, cj) {
   n <- length(ci) + length(cj)
   centroid_ci <- colMeans(ci)
   centroid_cj <- colMeans(cj)
-  return(euc_dist(centroid_ci, centroid_cj))
+  return(dist_func(centroid_ci, centroid_cj))
 }
 
 get_distance_measure <- function(linkage_fun) {
