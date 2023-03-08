@@ -21,8 +21,6 @@
 #'@param cluster_fun function, a cluster function that runs on the vectors retrieved from the projection into R^`dim_k`.
 #'@param arg_cluster_fun Optional arguments for the `cluster_fun` function.
 #'Possible values need to be looked up in the respective documentation.
-#'@param metric Optional argument for distances.
-#'Possible values can be checked in `dist`.
 #'@param arg_kernel Optional arguments for the `calculate_mercer_kernel` function.
 #'Types can be checked in the corresponding documentation.
 #'@return The return type of `cluster_fun`
@@ -32,8 +30,7 @@ spectral_clustering <- function(
     dim_k,
     cluster_fun,
     arg_cluster_fun,
-    metric="euclidean",
-    arg_kernel=list(type="gauß", gamma=10)
+    arg_kernel=list(type="gauß", gamma=10, metric="euclidean")
     )
   {
   num_clusters <- as.integer(num_clusters)
@@ -53,9 +50,18 @@ spectral_clustering <- function(
   alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel, metric=metric)
 
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
+<<<<<<< HEAD
   cluster["kernel"] <- kernel
   attr(cluster, "cluster") <- "spectral"
 
+=======
+
+  cluster["kernel"] <- arg_kernel
+  cluster["dim_k"] <- dim_k
+  cluster["data"] <- data
+  attr(cluster, "cluster") <- "spectral"
+
+>>>>>>> 9d4f244 (Solved merge conflict, fixed Description file, started new function in spectral)
   return(cluster)
 }
 
@@ -74,14 +80,13 @@ spectral_clustering <- function(
 #'@param data matrix, with columns of numeric data.
 #'Each row represents one data point. The columns are the dimensions.
 #'@param dim_k numeric value smaller than the number of data points, the dimension the data should be projected into.
-#'@param metric Optional argument for distances.
-#'Possible values can be checked in `dist`.
 #'@param arg_kernel Optional arguments for the `calculate_mercer_kernel` function.
-#'Types can be checked in the corresponding documentation.
+#'
+#'TODO
 #'
 #'@return matrix, with the transformed data points
-calculate_k_projection <- function(data, dim_k, metric, arg_kernel){
-  mercer_kernel <- calculate_mercer_kernel(data, metric=metric, kernel=arg_kernel)
+calculate_k_projection <- function(data, dim_k, arg_kernel){
+  mercer_kernel <- calculate_mercer_kernel(data, kernel=arg_kernel)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
 
@@ -105,23 +110,35 @@ calculate_k_projection <- function(data, dim_k, metric, arg_kernel){
 }
 
 
-calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10), metric=NULL){
+calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, metric="euclidean")){
   # Check that Cluster Data has the right type
   source("R/utils/utils.R")
   source("R/utils/utils_spectral.R")
   check_input_data(data)
+  data_length <- nrow(data)
+
+  stopifnot("Kernel has to be a list"= is.list(kernel))
 
   if(kernel$type == "gauß"){
-    kernel_function <- function(x, y) {
-      if(is.null(kernel$gamma) ){
-        gamma <- 10
+    if(is.null(kernel$gamma) ){
+      gamma <- 10
+    }
+    else{
+      gamma <- kernel$gamma
+      stopifnot("Gamma has to be numeric"=
+                  length(gamma)==1 && is.numeric(gamma))
+    }
+    if(kernel$normed == TRUE){
+      kernel_function <- function(x, y) {
+        numerator <- (data_length-1) * calculate_gauss_kernel(x, y, gamma=gamma, metric=metric)
+        denominator_one <- sum(apply(data[seq(data_length-1), ], 1, calculate_gauss_kernel, x, gamma=gamma, metric=metric))
+        denominator_two <- sum(apply(data[seq(data_length-1), ], 1, calculate_gauss_kernel, y, gamma=gamma, metric=metric))
+        return(numerator/((denominator_one)**(1/2) * (denominator_two)**(1/2)))
       }
-      else{
-        gamma <- kernel$gamma
-        stopifnot("Gamma has to be numeric"=
-                    length(gamma)==1 && is.numeric(gamma))
+    } else{
+      kernel_function <- function(x, y) {
+        return(calculate_gauss_kernel(x, y, gamma=gamma, metric=metric))
       }
-      return(exp(- gamma * dist_func(x, y, type=metric)))
     }
   }
   else if(kernel$type == "test"){
@@ -130,8 +147,6 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10), m
   else{
     stop("Not a right kernel type provided, check in the documentary for allowed types.")
   }
-  data_length <- nrow(data)
-
   kernel_matrix <- matrix(nrow=data_length, ncol=data_length)
 
   for(i in seq(to=data_length)){
@@ -142,6 +157,11 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10), m
     }
   }
   return(kernel_matrix)
+}
+
+calculate_gauss_kernel <- function(x, y, gamma, metric){
+  stopifnot("Gamma has to be numeric"= length(gamma)==1 && is.numeric(gamma))
+  return(exp(- gamma * dist_func(x, y, type=metric)))
 }
 
 
@@ -179,8 +199,39 @@ calculate_eigenvectors <- function(matrix){
   return(eigen_vectors)
 }
 
+<<<<<<< HEAD
 add_point_to_spectral_cluster <- function(cluster){
   source("R/utils/spectral_util.R")
   check_spectral_cluster(cluster)
 
+=======
+add_point_to_spectral_cluster <- function(cluster, x){
+  source("R/utils/spectral_util.R")
+  check_spectral_cluster(cluster)
+
+  stopifnot("x and the cluster data have to be in the same vector space."=
+              length(x) == ncol(cluster$data))
+  stopifnot("x has to be a numeric vector"=
+              is.vector(x) && is.numeric(x))
+
+  n <- nrow(data)
+  dim_k <- cluster$dim_k
+
+  normed_kernel <- calculate_mercer_kernel(data=data, kernel=c(list(normed=TRUE), cluster$kernel))
+
+  data <- rbind(data, x)
+  kernel <- calculate_mercer_kernel(data=data, kernel = cluster$kernel)
+  normed_kernel_ext <- calculate_mercer_kernel(data=data, kernel=c(list(normed=TRUE), cluster$kernel))
+
+  # Calculation of the projection matrix based on definition 10.55 Richter
+  projection <- vector("numeric", length = dim_k)
+  prefactor <- (1/n * sum(kernel[n+1, ]))**(-1)
+  # Calculate the eigen values in the formula
+  eigen_values <- eigen(1/n * normed_kernel, symmetric=TRUE)$values
+
+  for(i in seq(dim_k)){
+    sum <- sum(normed_kernel_ext[])
+  }
+
+>>>>>>> 9d4f244 (Solved merge conflict, fixed Description file, started new function in spectral)
 }

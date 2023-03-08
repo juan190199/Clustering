@@ -19,4 +19,8 @@ check_kernel_properties <- function(kernel){
 check_spectral_cluster <- function(cluster){
   stopifnot("Cluster has to be spectral."=
               attr(cluster, "cluster") == "spectral" )
+  stopifnot("The kernel is missing"=
+              !is.null(cluster$kernel))
+  stopifnot("The projection dimension dim_k is missing"=
+              !is.null(cluster$dim_k))
 }
