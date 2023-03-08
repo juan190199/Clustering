@@ -91,13 +91,13 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     return(output)
 }
 
-library(datasets)
-data(iris)
-
-# Standardize data
-iris_std <- data.matrix(scale(iris[, 1:4]))
-
-result <- agglomerative_hierarchical_clustering(iris_std, 3, "single")
+# library(datasets)
+# data(iris)
+#
+# # Standardize data
+# iris_std <- data.matrix(scale(iris[, 1:4]))
+#
+# result <- agglomerative_hierarchical_clustering(iris_std, 3, "single")
 
 # # Perform PCA on the iris dataset
 # iris_pca <- prcomp(iris[, 1:4], scale = TRUE, center = TRUE)
