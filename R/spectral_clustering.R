@@ -1,6 +1,7 @@
 calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
   # Check that Cluster Data has the right type
   source("R/utils.R")
+  source("R/utils_spectral.R")
   check_input_data(data)
 
   if(kernel_type == "gauß"){
@@ -8,6 +9,9 @@ calculate_mercer_kernel <- function(data, kernel_type="gauß", ...){
       optional_params <- list(...)
       if(is.null(optional_params$gamma) ){
         gamma <- 10
+      }
+      else{
+        gamma <- optional_params$gamma
       }
       return(exp(- gamma * euc_dist(x, y)))
     }
@@ -88,11 +92,24 @@ calculate_k_projection <- function(data, dim_k, ...){
       return(res_vec)
     }
   )
-  return(t(betas))
+  return(betas)
 }
 
-
-spectral_clustering <- function(data, num_clusters, dim_k, ...){
+#'Implementation of the spectral clustering algorithm.
+#'
+#'`spectral_clustering` is a clustering algorithm that emphasizes the distances
+#'data.
+#'
+#'@param data A matrix with two columns of numeric data.
+#'Each row represents one data point. The columns are the dimensions.
+#'@param num_clusters The number of clusters, a numeric value larger than one.
+#'@param dim_k The dimension the data should be projected into.
+#'@param cluster_fun A cluster function that runs on the vecors retrieved
+#' from the projection into R^`dim_k`
+#'@return The return type of `cluster_fun`
+spectral_clustering <- function(
+    data, num_clusters, dim_k,
+    ...){
   num_clusters <- as.integer(num_clusters)
   dim_k <- as.integer(dim_k)
   num_datapoints <- nrow(data)
@@ -108,7 +125,10 @@ spectral_clustering <- function(data, num_clusters, dim_k, ...){
 
   alphas <- calculate_k_projection(data, dim_k=dim_k, ...)
 
+  source("R/kmed.R")
+  kmedoid(data)
+
 }
 
-m <- matrix(1:12, nrow=3)
-print(spectral_clustering(m, dim_k=2, num_clusters = 3))
+m <- matrix(c(1,3, 1,4,2,4,2,5,2,6,3,4,4,5,5,6), ncol=2, byrow=TRUE)
+print(spectral_clustering(m, dim_k=1, num_clusters = 2, gamma=1/20))
