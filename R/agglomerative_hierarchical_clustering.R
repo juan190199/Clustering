@@ -73,32 +73,32 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 
     print_ <- function() {
         for (id in 1:length(clusters)) {
-            cat("Cluster: ", id, "\n")
+            # cat("Cluster: ", id, "\n")
             idx <- sapply(clusters[[id]], function(x) which(apply(data, 1, function(y) all(y == x))))
             order <<- c(order, c(idx))
             for (i in 1:length(clusters[[id]])) {
                 labels[idx[[i]]] <<- id
-                cat(idx[[i]], "\t", clusters[[id]][[i]], "\n")
+                # cat(idx[[i]], "\t", clusters[[id]][[i]], "\n")
             }
         }
     }
 
     sanity_checks()
     run_algorithm()
-    # print_()
+    print_()
 
     output <- list(order = order, clusters = clusters, method = linkage_fun, labels = labels)
     return(output)
 }
 
-# library(datasets)
-# data(iris)
-#
-# # Standardize data
-# iris_std <- data.matrix(scale(iris[, 1:4]))
-#
-# result <- agglomerative_hierarchical_clustering(iris_std, 3, "complete")
-#
+library(datasets)
+data(iris)
+
+# Standardize data
+iris_std <- data.matrix(scale(iris[, 1:4]))
+
+result <- agglomerative_hierarchical_clustering(iris_std, 3, "single")
+
 # # Perform PCA on the iris dataset
 # iris_pca <- prcomp(iris[, 1:4], scale = TRUE, center = TRUE)
 # iris_pca_2d <- iris_pca$x[, 1:2]
