@@ -45,19 +45,6 @@ merge_and_form_new_clusters <- function(clusters, ci_id, cj_id) {
   return(new_clusters)
 }
 
-print_ <- function() {
-  for (id in 1:length(clusters)) {
-    cat("Cluster: ", id, "\n")
-    idx <- sapply(clusters[[id]], function(x) which(apply(data, 1, function(y) all(y == x))))
-    order <<- c(order, c(idx))
-    for (i in 1:length(clusters[[id]])) {
-      labels[idx[[i]]] <<- id
-      cat(idx[[i]], "\t", clusters[[id]][[i]], "\n")
-    }
-  }
-}
-
-
 ######################
 ##    Unit tests    ##
 ######################
@@ -76,4 +63,13 @@ test_that("find_closest_clusters returns the indices of the closests clusters", 
   closest_clusters <- find_closest_clusters(clusters, measure)
   expect_equal(length(closest_clusters), 2)
   expect_true(closest_clusters[1] != closest_clusters[2])
+})
+
+# Test for merge_and_form_new_clusters function
+test_that("merge_and_form_new_clusters merges two clusters and returns a list of clusters", {
+  data <- matrix(rnorm(20), nrow = 10)
+  clusters <- init_clusters(data)
+  new_clusters <- merge_and_form_new_clusters(clusters, 1, 2)
+  expect_equal(length(new_clusters), length(clusters) - 1)
+  expect_equal(length(new_clusters[[length(new_clusters)]]), length(clusters[[1]]) + length(clusters[[2]]))
 })
