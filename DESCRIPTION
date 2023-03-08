@@ -1,9 +1,8 @@
 Package: Clustering
 Type: Package
-Title: What the package does (short line)
-Version: 0.0.0.9000
+Title: ClusterR - A R package for clustering analysis
+Version: 1.0.0
 Date: 2023-02-11
-Maintainer: Who to complain to <yourfault@somewhere.net>
 Authors@R: 
   c(
     person("Juan", "Da Silva", , "first.last@example.com", role = c("aut", "cre"),
@@ -15,8 +14,14 @@ Authors@R:
     person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID")),
   )
-Description: At the moment not much, but it will include some cool Clustering methods.
+Description: ClusterR is a R package that provides implementation for various clustering algorithms such as k-means,
+k-medoids, spectral clustering, hierarchical clustering, DBSCAN and OPTICS. These algorithms are commonly used in
+unsupervised learning tasks to group similar data points together. The package is designed to be easy to use and
+flexible, allowing users to customize the algorithms by adjusting various parameters and distance measures.
 License: MIT + file LICENSE
 Encoding: UTF-8
+Imports:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+URL:
+Depends:
