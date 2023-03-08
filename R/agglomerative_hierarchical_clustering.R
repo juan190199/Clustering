@@ -8,7 +8,7 @@
 
 # ToDo: Check if all linkage functions are working
 
-source("R/utils.R")
+source("R/utils/hierarchical_utils.R")
 
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     N <- nrow(data)

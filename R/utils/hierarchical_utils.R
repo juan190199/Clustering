@@ -1,55 +1,44 @@
 library(dplyr)
 
-
-dist_func <- function(p, q, type = "euclidean") {
-  # Check input data
-  stopifnot(is.numeric(p) && is.vector(p) &&
-            is.numeric(q) && is.vector(q))
-  stopifnot(length(p) == length(q))
-
-  # Calculate distance based on type
-  if (type == "euclidean") {
-    distance <- sqrt(sum((p - q)^2))
-  } else if (type == "manhattan") {
-    distance <- sum(abs(p - q))
-  } else if (type == "minkowski") {
-    p_val <- 3 # Change to desired p-value
-    distance <- (sum(abs(p - q)^p_val))^(1/p_val)
-  } else {
-    stop("Invalid distance type. Choose 'euclidean', 'manhattan', or 'minkowski'.")
-  }
-
-  return(distance)
-}
-
-euc_norm <- function(x) {
-  dist_func(x, rep(0, length(x)))
-}
-
 ############################
 ##    Linkage functions   ##
 ############################
 
 single_link <- function(ci, cj) {
+  source("R/utils/utils.R")
   return(min(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
+<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
+=======
+      dist_fun(vi, vj)
+>>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })))
 }
 
 complete_link <- function(ci, cj) {
+  source("R/utils/utils.R")
   return(max(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
+<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
+=======
+      dist_fun(vi, vj)
+>>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })))
 }
 
 average_link <- function(ci, cj) {
+  source("R/utils/utils.R")
   distances <- sapply(ci, function(vi) {
     sapply(cj, function(vj) {
+<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
+=======
+      dist_fun(vi, vj)
+>>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })
   return(mean(distances))
@@ -64,10 +53,15 @@ wards_minimum_variance_link <- function(ci, cj) {
 }
 
 median_link <- function(ci, cj) {
+  source("R/utils/utils.R")
   n <- length(ci) + length(cj)
   centroid_ci <- colMeans(ci)
   centroid_cj <- colMeans(cj)
+<<<<<<< HEAD:R/utils.R
   return(dist_func(centroid_ci, centroid_cj))
+=======
+  return(dist_fun(centroid_ci, centroid_cj))
+>>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
 }
 
 get_distance_measure <- function(linkage_fun) {
