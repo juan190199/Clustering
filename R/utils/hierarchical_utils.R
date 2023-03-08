@@ -8,11 +8,7 @@ single_link <- function(ci, cj) {
   source("R/utils/utils.R")
   return(min(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
-=======
-      dist_fun(vi, vj)
->>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })))
 }
@@ -21,11 +17,7 @@ complete_link <- function(ci, cj) {
   source("R/utils/utils.R")
   return(max(sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
-=======
-      dist_fun(vi, vj)
->>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })))
 }
@@ -34,11 +26,7 @@ average_link <- function(ci, cj) {
   source("R/utils/utils.R")
   distances <- sapply(ci, function(vi) {
     sapply(cj, function(vj) {
-<<<<<<< HEAD:R/utils.R
       dist_func(vi, vj)
-=======
-      dist_fun(vi, vj)
->>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
     })
   })
   return(mean(distances))
@@ -57,11 +45,7 @@ median_link <- function(ci, cj) {
   n <- length(ci) + length(cj)
   centroid_ci <- colMeans(ci)
   centroid_cj <- colMeans(cj)
-<<<<<<< HEAD:R/utils.R
   return(dist_func(centroid_ci, centroid_cj))
-=======
-  return(dist_fun(centroid_ci, centroid_cj))
->>>>>>> f8fe64f (Documentation + Changed fucntion arguments):R/utils/hierarchical_utils.R
 }
 
 get_distance_measure <- function(linkage_fun) {

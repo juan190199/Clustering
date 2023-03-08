@@ -52,8 +52,11 @@ spectral_clustering <- function(
 
   alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel, metric=metric)
 
-  cluster_fun(data, num_clusters, arg_cluster_fun)
+  cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
+  cluster["kernel"] <- kernel
+  attr(cluster, "cluster") <- "spectral"
 
+  return(cluster)
 }
 
 #' K-Projection.
@@ -176,37 +179,8 @@ calculate_eigenvectors <- function(matrix){
   return(eigen_vectors)
 }
 
-m <- matrix(c(1,3, 1,4,2,4,2,5,2,6,3,4,4,5,5,6), ncol=2, byrow=TRUE)
-source("R/agglomerative_hierarchical_clustering.R")
-library(datasets)
-data(iris)
+add_point_to_spectral_cluster <- function(cluster){
+  source("R/utils/spectral_util.R")
+  check_spectral_cluster(cluster)
 
-# # Standardize data
-iris_std <- data.matrix(scale(iris[, 1:4]))
-#
-result <- spectral_clustering(
-  iris_std, dim_k=2, num_clusters = 3, cluster_fun = agglomerative_hierarchical_clustering,
-  arg_cluster_fun = "complete"
-)
-#
-# # Perform PCA on the iris dataset
-# iris_pca <- prcomp(iris[, 1:4], scale = TRUE, center = TRUE)
-# iris_pca_2d <- iris_pca$x[, 1:2]
-#
-# # Plot the iris data in two dimensions using the first two principal components
-# plot(iris_pca_2d, col = result$labels, pch = 19, xlab = "PC1", ylab = "PC2")
-# legend("bottomright", legend = unique(result$labels), col = 1:length(unique(result$labels)), pch = 19)
-#
-# # Plot the iris data in two dimensions using the first two principal components
-# plot(iris_pca_2d, col = iris$Species, pch = 19, xlab = "PC1", ylab = "PC2")
-# legend("bottomright", legend = unique(iris$Species), col = 1:length(unique(iris$Species)), pch = 19)
-#
-# iris_hclust <- hclust(dist(iris_std[, 1:4]))
-# iris_clusters <- cutree(iris_hclust, k = 3)
-#
-# # Plot the iris data in two dimensions using the first two principal components, colored by cluster
-# plot(iris_pca_2d, col = iris_clusters, pch = 19, xlab = "PC1", ylab = "PC2")
-# legend("bottomright", legend = unique(iris_clusters), col = 1:length(unique(iris_clusters)), pch = 19)
-
-
-print(spectral_clustering(m, dim_k=1, num_clusters = 2, gamma=1/20, cluster_fun = agglomerative_hierarchical_clustering()))
+}

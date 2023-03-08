@@ -11,9 +11,9 @@ Authors@R:
     person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre")
   )
 Description: ClusterR is a R package that provides implementation for various clustering algorithms such as k-means,
-k-medoids, spectral clustering, hierarchical clustering, DBSCAN and OPTICS. These algorithms are commonly used in
-unsupervised learning tasks to group similar data points together. The package is designed to be easy to use and
-flexible, allowing users to customize the algorithms by adjusting various parameters and distance measures.
+  k-medoids, spectral clustering, hierarchical clustering, DBSCAN and OPTICS. These algorithms are commonly used in
+  unsupervised learning tasks to group similar data points together. The package is designed to be easy to use and
+  flexible, allowing users to customize the algorithms by adjusting various parameters and distance measures.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:

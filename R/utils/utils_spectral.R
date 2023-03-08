@@ -15,3 +15,8 @@ check_kernel_properties <- function(kernel){
   warning("Keep in mind, kernel function should be continuous.
           No option to check that in the coding.")
 }
+
+check_spectral_cluster <- function(cluster){
+  stopifnot("Cluster has to be spectral."=
+              attr(cluster, "cluster") == "spectral" )
+}
