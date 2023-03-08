@@ -66,5 +66,7 @@ get_distance_measure <- function(linkage_fun) {
     return(wards_minimum_variance_link)
   } else if (linkage_fun == "median") {
     return(median_link)
+  } else {
+    stop("Linkage function does not exist. Possible linkage functions are: single, complete, average, wards, median")
   }
 }
