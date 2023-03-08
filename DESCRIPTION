@@ -5,14 +5,10 @@ Version: 1.0.0
 Date: 2023-02-11
 Authors@R: 
   c(
-    person("Juan", "Da Silva", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Kevin", "Klein", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Paris", "Huth", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Juan", "Da Silva", , "first.last@example.com", role = c("aut", "cre")
+    person("Kevin", "Klein", , "first.last@example.com", role = c("aut", "cre")
+    person("Paris", "Huth", , "first.last@example.com", role = c("aut", "cre")
+    person("Amrei", "Mihan", , "a.mihan.1@web.de", role = c("aut", "cre")
   )
 Description: ClusterR is a R package that provides implementation for various clustering algorithms such as k-means,
 k-medoids, spectral clustering, hierarchical clustering, DBSCAN and OPTICS. These algorithms are commonly used in
