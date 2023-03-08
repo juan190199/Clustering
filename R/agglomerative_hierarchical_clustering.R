@@ -85,7 +85,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 
     sanity_checks()
     run_algorithm()
-    print_()
+    # print_()
 
     output <- list(order = order, clusters = clusters, method = linkage_fun, labels = labels)
     return(output)
@@ -94,7 +94,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 # library(datasets)
 # data(iris)
 #
-# Standardize data
+# # Standardize data
 # iris_std <- data.matrix(scale(iris[, 1:4]))
 #
 # result <- agglomerative_hierarchical_clustering(iris_std, 3, "complete")
