@@ -8,8 +8,6 @@
 
 # ToDo: Create sanity checks
 # ToDo: Check if all linkage functions are working
-# ToDo: Create sanity checks
-# ToDo: Create test functions
 
 source("R/utils.R")
 
