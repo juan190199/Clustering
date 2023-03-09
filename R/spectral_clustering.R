@@ -50,18 +50,12 @@ spectral_clustering <- function(
   alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel, metric=metric)
 
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
-<<<<<<< HEAD
-  cluster["kernel"] <- kernel
-  attr(cluster, "cluster") <- "spectral"
-
-=======
 
   cluster["kernel"] <- arg_kernel
   cluster["dim_k"] <- dim_k
   cluster["data"] <- data
   attr(cluster, "cluster") <- "spectral"
 
->>>>>>> 9d4f244 (Solved merge conflict, fixed Description file, started new function in spectral)
   return(cluster)
 }
 
@@ -130,9 +124,9 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
     }
     if(kernel$normed == TRUE){
       kernel_function <- function(x, y) {
-        numerator <- (data_length-1) * calculate_gauss_kernel(x, y, gamma=gamma, metric=metric)
-        denominator_one <- sum(apply(data[seq(data_length-1), ], 1, calculate_gauss_kernel, x, gamma=gamma, metric=metric))
-        denominator_two <- sum(apply(data[seq(data_length-1), ], 1, calculate_gauss_kernel, y, gamma=gamma, metric=metric))
+        numerator <- calculate_gauss_kernel(x, y, gamma=gamma, metric=metric)
+        denominator_one <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, x, gamma=gamma, metric=metric))
+        denominator_two <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, y, gamma=gamma, metric=metric))
         return(numerator/((denominator_one)**(1/2) * (denominator_two)**(1/2)))
       }
     } else{
@@ -199,12 +193,6 @@ calculate_eigenvectors <- function(matrix){
   return(eigen_vectors)
 }
 
-<<<<<<< HEAD
-add_point_to_spectral_cluster <- function(cluster){
-  source("R/utils/spectral_util.R")
-  check_spectral_cluster(cluster)
-
-=======
 add_point_to_spectral_cluster <- function(cluster, x){
   source("R/utils/spectral_util.R")
   check_spectral_cluster(cluster)
@@ -221,7 +209,6 @@ add_point_to_spectral_cluster <- function(cluster, x){
 
   data <- rbind(data, x)
   kernel <- calculate_mercer_kernel(data=data, kernel = cluster$kernel)
-  normed_kernel_ext <- calculate_mercer_kernel(data=data, kernel=c(list(normed=TRUE), cluster$kernel))
 
   # Calculation of the projection matrix based on definition 10.55 Richter
   projection <- vector("numeric", length = dim_k)
@@ -230,8 +217,7 @@ add_point_to_spectral_cluster <- function(cluster, x){
   eigen_values <- eigen(1/n * normed_kernel, symmetric=TRUE)$values
 
   for(i in seq(dim_k)){
-    sum <- sum(normed_kernel_ext[])
+    eigen_value <- eigen_values[i]
+    sum <- sum(apply(data, )])
   }
-
->>>>>>> 9d4f244 (Solved merge conflict, fixed Description file, started new function in spectral)
-}
+# }
