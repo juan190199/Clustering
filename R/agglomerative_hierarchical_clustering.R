@@ -5,6 +5,9 @@
 ## 3. Average linkage function
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
+## 6. Centroid linkage function
+## 7. Mcquitty linkage function
+
 
 source("R/utils/agglomerative_hierarchical_clustering_utils.R")
 
