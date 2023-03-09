@@ -40,11 +40,42 @@ median_link <- function(ci, cj, dist_method = "euclidean") {
 }
 
 wards_minimum_variance_link <- function(ci, cj, dist_method = "euclidean") {
-  ni <- length(ci)
-  nj <- length(cj)
-  centroid_i <- apply(ci, 2, mean)
-  centroid_j <- apply(cj, 2, mean)
-  return(sqrt((ni * nj) / (ni + nj)) * dist_func(centroid_i, centroid_j, type = dist_method))
+  n_i <- length(ci)
+  n_j <- length(cj)
+  n <- n_i + n_j
+
+  # Calculate the centroids of ci and cj
+  centroid_i <- rep(0, length(ci[[1]])) # initialize a vector of 0s
+  for (k in 1:length(ci)) {
+    centroid_i <- centroid_i + ci[[k]]
+  }
+  centroid_i <- centroid_i / n_i
+
+  centroid_j <- rep(0, length(cj[[1]])) # initialize a vector of 0s
+  for (k in 1:length(cj)) {
+    centroid_j <- centroid_j + cj[[k]]
+  }
+  centroid_j <- centroid_j / n_j
+
+  # Calculate the sum of squares within ci and cj
+  ssq_i <- sum(sapply(ci, function(x) sum((x - centroid_i)^2)))
+  ssq_j <- sum(sapply(cj, function(x) sum((x - centroid_j)^2)))
+
+  # Calculate the sum of squares after merging ci and cj
+  merged <- c(ci, cj)
+  centroid_merged <- rep(0, length(merged[[1]])) # initialize a vector of 0s
+  for (k in 1:length(merged)) {
+    centroid_merged <- centroid_merged + merged[[k]]
+  }
+  centroid_merged <- centroid_merged / n
+
+  ssq_merged <- sum(sapply(merged, function(x) sum((x - centroid_merged)^2)))
+
+  # Calculate the increase in sum of squares due to merging
+  increase <- ssq_merged - ssq_i - ssq_j
+
+  # Return the square root of the increase divided by the number of points
+  return(sqrt(increase / n))
 }
 
 centroid_link <- function(ci, cj, dist_method = "euclidean") {
