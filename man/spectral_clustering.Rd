@@ -4,23 +4,70 @@
 \alias{spectral_clustering}
 \title{Implementation of the spectral clustering algorithm.}
 \usage{
-spectral_clustering(data, num_clusters, dim_k, ...)
+spectral_clustering(
+  data,
+  num_clusters = 2,
+  dim_k = 1,
+  cluster_fun,
+  arg_cluster_fun,
+  arg_kernel = list(type = "gauß", gamma = 10, metric = "euclidean")
+)
 }
 \arguments{
-\item{data}{A matrix with two columns of numeric data.
-Each row represents one data point. The columns are the dimensions.}
+\item{data}{data.frame, with columns of numeric data. Each row represents one
+data point. The columns are the dimensions.}
 
-\item{num_clusters}{The number of clusters, a numeric value larger than one.}
+\item{num_clusters}{numeric value larger than one, the number of clusters.}
 
-\item{dim_k}{The dimension the data should be projected into.}
+\item{dim_k}{numeric value smaller than the number of data points, the
+dimension the data should be projected into.}
 
-\item{cluster_fun}{A cluster function that runs on the vecors retrieved
-from the projection into R^\code{dim_k}}
+\item{cluster_fun}{function, a cluster function that runs on the vectors
+retrieved from the projection into R^\code{dim_k}.}
+
+\item{arg_cluster_fun}{Optional arguments for the \code{cluster_fun} function.
+Possible values need to be looked up in the respective documentation.}
+
+\item{arg_kernel}{Optional arguments for the \code{calculate_mercer_kernel}
+function. Types can be checked in the corresponding documentation.}
 }
 \value{
 The return type of \code{cluster_fun}
 }
 \description{
-\code{spectral_clustering} is a clustering algorithm that emphasizes the distances
-data.
+\code{spectral_clustering} is a clustering algorithm that reduces the dimension of
+the training data and then performs a clustering algorithm on the new
+transformed data.
+}
+\details{
+The first step is dimension reduction, which is accomplished with
+\code{calculate_k_projection}. This packet function has to solve an eigenvalue
+problem involving, for example, the Laplace matrix. The return provides us
+with new data points in the dimension \code{dim_k} which are fed into the given
+clustering algorithm \code{cluster_fun}.
+
+If we want to find two clusters, the optimization problem from which our
+eigenvalue problem stems is the problem of finding a minimum cut in the
+induced reduced ε-neighborhood graph. Where epsilon is chosen as infinity.
+}
+\section{Terms}{
+ All data points in the input data have to stem from an
+identical distribution and have to be independent.
+Clearly the data points also have to be numeric and from the same vector
+space.
+}
+
+\examples{
+cluster_data <- iris[, 1:2]
+
+spectral_clustering(
+  cluster_data,
+  num_clusters=2,
+  dim_k=1,
+  cluster_fun=agglomerative_hierarchical_clustering,
+  arg_cluster_fun=c("single")
+)
+}
+\references{
+\url{https://link.springer.com/book/10.1007/978-3-662-59354-7}
 }

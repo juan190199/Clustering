@@ -1,33 +1,56 @@
 #'Implementation of the spectral clustering algorithm.
 #'
-#'`spectral_clustering` is a clustering algorithm that emphasizes the distances of the input data.
+#'`spectral_clustering` is a clustering algorithm that reduces the dimension of
+#'the training data and then performs a clustering algorithm on the new
+#'transformed data.
 #'
-#' It defines a graph that has the data points as vertices and edges with edge weights that take the distances between all data points into account.
-#' Formulates an optimization problem that is in the case of two clusters the problem of finding a minimum cut in that graph.
-#' This problem is equivalent to an eigenvector problem, that we solve in the function.
+#'The first step is dimension reduction, which is accomplished with
+#'`calculate_k_projection`. This packet function has to solve an eigenvalue
+#'problem involving, for example, the Laplace matrix. The return provides us
+#'with new data points in the dimension `dim_k` which are fed into the given
+#'clustering algorithm `cluster_fun`.
+#'
+#'If we want to find two clusters, the optimization problem from which our
+#'eigenvalue problem stems is the problem of finding a minimum cut in the
+#'induced reduced ε-neighborhood graph. Where epsilon is chosen as infinity.
+#'
+#'
+#'
+#'@section Terms: All data points in the input data have to stem from an
+#'  identical distribution and have to be independent.
+#'  Clearly the data points also have to be numeric and from the same vector
+#'  space.
+#'
+#'@param data data.frame, with columns of numeric data. Each row represents one
+#'  data point. The columns are the dimensions.
+#'@param num_clusters numeric value larger than one, the number of clusters.
+#'@param dim_k numeric value smaller than the number of data points, the
+#'  dimension the data should be projected into.
+#'@param cluster_fun function, a cluster function that runs on the vectors
+#'  retrieved from the projection into R^`dim_k`.
+#'@param arg_cluster_fun Optional arguments for the `cluster_fun` function.
+#'  Possible values need to be looked up in the respective documentation.
+#'@param arg_kernel Optional arguments for the `calculate_mercer_kernel`
+#'  function. Types can be checked in the corresponding documentation.
+#'@return The return type of `cluster_fun`
+#'
+#'@examples
+#'cluster_data <- data.matrix(scale(iris[, 1:4]))
+#'
+#'spectral_clustering(
+#'   cluster_data,
+#'   num_clusters=2,
+#'   dim_k=1,
+#'   cluster_fun=agglomerative_hierarchical_clustering,
+#'   arg_cluster_fun=c("single")
+#')
+#'@export
 #'
 #'@references \url{https://link.springer.com/book/10.1007/978-3-662-59354-7}
-#'
-#'
-#'@section terms:
-#' All data points in the input data have to stem from an identical distribution and have to be independent.
-#'
-#' Clearly the data points also have to be numeric and from the same vector space.
-#'
-#'@param data matrix, with columns of numeric data.
-#'Each row represents one data point. The columns are the dimensions.
-#'@param num_clusters numeric value larger than one, the number of clusters.
-#'@param dim_k numeric value smaller than the number of data points, the dimension the data should be projected into.
-#'@param cluster_fun function, a cluster function that runs on the vectors retrieved from the projection into R^`dim_k`.
-#'@param arg_cluster_fun Optional arguments for the `cluster_fun` function.
-#'Possible values need to be looked up in the respective documentation.
-#'@param arg_kernel Optional arguments for the `calculate_mercer_kernel` function.
-#'Types can be checked in the corresponding documentation.
-#'@return The return type of `cluster_fun`
 spectral_clustering <- function(
     data,
-    num_clusters,
-    dim_k,
+    num_clusters=2,
+    dim_k=1,
     cluster_fun,
     arg_cluster_fun,
     arg_kernel=list(type="gauß", gamma=10, metric="euclidean")
@@ -47,7 +70,7 @@ spectral_clustering <- function(
   stopifnot("The dimension of the projection image has to be smaller than the number of clusters"=
               dim_k < num_clusters)
 
-  alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel, metric=metric)
+  alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel)
 
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
 
@@ -80,6 +103,10 @@ spectral_clustering <- function(
 #'
 #'@return matrix, with the transformed data points
 calculate_k_projection <- function(data, dim_k, arg_kernel){
+  stopifnot("data has to be a matrix or data.frame"=
+              is.data.frame(data) || is.matrix(data))
+  data <- as.matrix(data)
+
   mercer_kernel <- calculate_mercer_kernel(data, kernel=arg_kernel)
   diagonal_matrix <- calculate_diagonal_matrix(mercer_kernel)
   laplacian_matrix <- diagonal_matrix - mercer_kernel
@@ -122,16 +149,16 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
       stopifnot("Gamma has to be numeric"=
                   length(gamma)==1 && is.numeric(gamma))
     }
-    if(kernel$normed == TRUE){
+    if(is.null(kernel$normed)){
       kernel_function <- function(x, y) {
-        numerator <- calculate_gauss_kernel(x, y, gamma=gamma, metric=metric)
-        denominator_one <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, x, gamma=gamma, metric=metric))
-        denominator_two <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, y, gamma=gamma, metric=metric))
-        return(numerator/((denominator_one)**(1/2) * (denominator_two)**(1/2)))
+        return(calculate_gauss_kernel(x, y, gamma=gamma, metric=kernel$metric))
       }
     } else{
       kernel_function <- function(x, y) {
-        return(calculate_gauss_kernel(x, y, gamma=gamma, metric=metric))
+        numerator <- calculate_gauss_kernel(x, y, gamma=gamma, metric=kernel$metric)
+        denominator_one <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, x, gamma=gamma, metric=kernel$metric))
+        denominator_two <- 1/data_length * sum(apply(data, 1, calculate_gauss_kernel, y, gamma=gamma, metric=kernel$metric))
+        return(numerator/((denominator_one)**(1/2) * (denominator_two)**(1/2)))
       }
     }
   }
@@ -185,7 +212,7 @@ calculate_eigenvectors <- function(matrix){
 
   # normalize
   for(i in seq(to=ncol(eigen_vectors)) ) {
-    norm <- euc_norm(eigen_vectors[, i])
+    norm <- norm_vec(eigen_vectors[, i])
     if( norm != 1){
       eigen_vectors[, i] <- 1/norm * eigen_vectors[, i]
     }
@@ -216,8 +243,19 @@ add_point_to_spectral_cluster <- function(cluster, x){
   # Calculate the eigen values in the formula
   eigen_values <- eigen(1/n * normed_kernel, symmetric=TRUE)$values
 
-  for(i in seq(dim_k)){
-    eigen_value <- eigen_values[i]
-    sum <- sum(apply(data, )])
+  calculate_extra_kernel <- function(i, j){
+    denominator <- 1/n**2 * sum(kernel[1:n, 1:n])
+    first_term <- kernel[i, j]
+    nominator_one <- 1/n * sum(kernel[i, 1:n])
+    nominator_two <- 1/n * sum(kernel[1:n, j])
+
+    return(first_term - nominator_one*nominator_two / denominator)
   }
-# }
+
+  for(j in seq(dim_k)){
+    eigen_value <- eigen_values[j]
+    sum <- sum(sapply(seq(n), function(y){
+      calculate_extra_kernel(y, n+1)
+    }))
+  }
+}
