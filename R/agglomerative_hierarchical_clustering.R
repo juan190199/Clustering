@@ -6,11 +6,9 @@
 ## 4. Wards minimum variance linkage function
 ## 5. Median linkage function
 
-# ToDo: Check if all linkage functions are working
+source("R/utils/agglomerative_hierarchical_clustering_utils.R")
 
-source("R/utils/hierarchical_utils.R")
-
-agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
+agglomerative_hierarchical_clustering <- function(data, K, linkage_fun, dist_method = "euclidean") {
     N <- nrow(data)
     measure <- get_distance_measure(linkage_fun)
     order <- c()
@@ -40,7 +38,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 
         for (i in 1:(length(clusters_ids) - 1)) {
             for (j in (i+1):length(clusters_ids)) {
-                dist <- measure(clusters[[clusters_ids[i]]], clusters[[clusters_ids[j]]])
+                dist <- measure(clusters[[clusters_ids[i]]], clusters[[clusters_ids[j]]], dist_method)
                 if (dist <= min_dist) {
                     min_dist <- dist
                     closest_clusters <- c(clusters_ids[i], clusters_ids[j])
@@ -91,14 +89,17 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
     return(output)
 }
 
+# X <- matrix(1:10, ncol = 2)
+# result <- agglomerative_hierarchical_clustering(X, 2, "wards")
+
 # library(datasets)
 # data(iris)
 #
 # # Standardize data
 # iris_std <- data.matrix(scale(iris[, 1:4]))
 #
-# result <- agglomerative_hierarchical_clustering(iris_std, 3, "single")
-
+# result <- agglomerative_hierarchical_clustering(iris_std, 3, "complete")
+#
 # # Perform PCA on the iris dataset
 # iris_pca <- prcomp(iris[, 1:4], scale = TRUE, center = TRUE)
 # iris_pca_2d <- iris_pca$x[, 1:2]
@@ -111,7 +112,7 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun) {
 # plot(iris_pca_2d, col = iris$Species, pch = 19, xlab = "PC1", ylab = "PC2")
 # legend("bottomright", legend = unique(iris$Species), col = 1:length(unique(iris$Species)), pch = 19)
 #
-# iris_hclust <- hclust(dist(iris_std[, 1:4]))
+# iris_hclust <- hclust(dist(iris_std[, 1:4]), method = "complete")
 # iris_clusters <- cutree(iris_hclust, k = 3)
 #
 # # Plot the iris data in two dimensions using the first two principal components, colored by cluster
