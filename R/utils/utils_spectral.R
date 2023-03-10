@@ -6,6 +6,8 @@ check_input_data <- function(data){
 }
 
 check_kernel_properties <- function(kernel){
+  stopifnot("A kernel has to be quadratic"=
+              nrow(kernel) == ncol(kernel))
   stopifnot("The kernel has to be symmetric."=
               isSymmetric.matrix(kernel))
   stopifnot("The kernel has to be positiv semidefinite."=
