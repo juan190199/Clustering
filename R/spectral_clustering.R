@@ -77,7 +77,7 @@ spectral_clustering <- function(
   cluster["kernel"] <- arg_kernel
   cluster["dim_k"] <- dim_k
   cluster["data"] <- data
-  attr(cluster, "cluster") <- "spectral"
+  attr(cluster, "class") <- "spectral"
 
   return(cluster)
 }
@@ -161,7 +161,7 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
   # Check that Cluster Data has the right type
   source("R/utils/utils.R")
   source("R/utils/utils_spectral.R")
-  check_input_data(data)
+  check_matrix_data(data)
   data_length <- nrow(data)
 
   stopifnot("Kernel has to be a list"= is.list(kernel))
@@ -233,7 +233,7 @@ calculate_gauss_kernel <- function(x, y, gamma, metric){
 calculate_diagonal_matrix <- function(mercer_kernel){
   # check mercer_kernel
   source("R/utils/utils_spectral.R")
-  check_input_data(mercer_kernel)
+  check_matrix_data(mercer_kernel)
   # check kernel properties
   check_kernel_properties(mercer_kernel)
 
@@ -258,7 +258,7 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
   # import utils
   source("R/utils/utils.R")
   source("R/utils/utils_spectral.R")
-  check_input_data(matrix)
+  check_matrix_data(matrix)
   stopifnot("Matrix has to be symmetric"=isSymmetric(matrix))
 
   eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors

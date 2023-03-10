@@ -1,10 +1,20 @@
-check_input_data <- function(data){
+#' Sanity Check Matrix Data
+#'
+#' `check_matrix_data` controls that `data` contains a matrix.
+#'
+#' @param data hopefully a numeric matrix.
+check_matrix_data <- function(data){
   stopifnot("The cluster values have to be integer or double."=
               is.numeric(data))
   stopifnot("The cluster data need to be provided as a matrix."=
               is.matrix(data))
 }
 
+#' Sanity Check Kernel
+#'
+#' `check_kernel_properties` controls that the given matrix is a mercer kernel.
+#'
+#' @param kernel numeric matrix, hopefully a mercer kernel.
 check_kernel_properties <- function(kernel){
   stopifnot("A kernel has to be quadratic"=
               nrow(kernel) == ncol(kernel))
@@ -18,9 +28,14 @@ check_kernel_properties <- function(kernel){
           No option to check that in the coding.")
 }
 
+#' Sanity Spectral Cluster
+#'
+#' `check_spectral_cluster` controls that the given list is a spectral cluster.
+#'
+#' @param cluster list, hopefully a spectral cluster.
 check_spectral_cluster <- function(cluster){
   stopifnot("Cluster has to be spectral."=
-              attr(cluster, "cluster") == "spectral" )
+              attr(cluster, "class") == "spectral" )
   stopifnot("The kernel is missing"=
               !is.null(cluster$kernel))
   stopifnot("The projection dimension dim_k is missing"=
