@@ -7,11 +7,11 @@
 kmedoid(data, k = 1, iter = 1)
 }
 \arguments{
-\item{data}{A list with two columns of numeric data.}
+\item{data}{A list with two or three columns of numeric data.}
 
 \item{k}{The number of medoids or clusters to be computed.}
 
-\item{iter}{The number of iterations the optimisation should go through. If an
+\item{iter}{The number of iterations the optimization should go through. If an
 optimal state has been reached, the function will exit.}
 }
 \value{

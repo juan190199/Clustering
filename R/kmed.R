@@ -3,7 +3,13 @@
 
 dista <- function(x,y) {
     # function from stats for getting the distance matrix
+    # posibility of different methods like minkowski
     dis <- dist(rbind(x,y))
+    return(dis)
+}
+dista3D <- function(x,y) {
+    # 3d distance
+    dis <- sqrt((x[,1] - y[,1])^2 + (x[,2] - y[,2])^2 + (x[,3] - y[,3])^2)
     return(dis)
 }
 
@@ -14,9 +20,9 @@ dista <- function(x,y) {
 #'data. k-medoids aim to minimize the total sum of distances within each cluster
 #'to its central medoid.
 #'
-#'@param data A list with two columns of numeric data.
+#'@param data A list with two or three columns of numeric data.
 #'@param k The number of medoids or clusters to be computed.
-#'@param iter The number of iterations the optimisation should go through. If an
+#'@param iter The number of iterations the optimization should go through. If an
 #'  optimal state has been reached, the function will exit.
 #'@return A list containing the following elements:
 #'- clusters: a vector of integers indicating the cluster assignment of each
@@ -33,7 +39,8 @@ dista <- function(x,y) {
 #'@export
 kmedoid <- function(data, k=1, iter=1){
     stopifnot('Number of medoids k has to be greater than 0!'= k > 0)
-    stopifnot('NUmber of iterations has to be greater than 0!'= iter > 0)
+    stopifnot('Number of iterations has to be greater than 0!'= iter > 0)
+    stopifnot('Clustering is only possible for 2 and 3 dimensional data so far!'= ncol(data) %in% c(2,3))
     if(k >= nrow(data)){
         cost <- 0
         medoids <- 1:nrow(data)
@@ -46,12 +53,22 @@ kmedoid <- function(data, k=1, iter=1){
     dist_mat <- matrix(0,nrow(data),nrow(data))
     # distance calculation (although across() would be more elegant, it's not more
     # efficient)
-    for (i in 1:nrow(data)){
-        for (j in 1:i) {
-            dist_mat[i,j] <- dista(data[i,],data[j,])
-            dist_mat[j,i] <- dist_mat[i,j]
+    if (ncol(data) ==2){
+        for (i in 1:nrow(data)){
+            for (j in 1:i) {
+                dist_mat[i,j] <- dista(data[i,],data[j,])
+                dist_mat[j,i] <- dist_mat[i,j]
+            }
+        }
+    } else {
+        for (i in 1:nrow(data)){
+            for (j in 1:i) {
+                dist_mat[i,j] <- dista3D(data[i,],data[j,])
+                dist_mat[j,i] <- dist_mat[i,j]
+            }
         }
     }
+
 
     # select k points at random to be used as initial medoids
     medoids <- sample(1:nrow(data), k)
@@ -116,5 +133,5 @@ kmedoid <- function(data, k=1, iter=1){
     }
 
     # Return results
-    return(list(clusters = clusters, medoids = medoids, cost = cost))
+    return(list(clusters = clusters, medoids = medoids, cost = cost,data =data))
 }
