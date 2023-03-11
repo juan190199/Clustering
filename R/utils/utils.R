@@ -1,17 +1,19 @@
-#'Prepares data for clustering.
+#'Preparation for Clustering.
 #'
 #'`read_input` can read in data from a .csv or .json file or directly from a data.frame
-#' Then the data is transformed into a data.frame with the data points on the columns.
+#' Then the data is transformed into a data.frame where each row represents one the data points.
 #'
 #' @section Note:
 #' When using a json file one needs to ensure that the data can be directly transferred into
 #' a table, e.g. column names as keys and entries of the same length
+#' The same applies when using a .csv file.
+#' Additionally, all data needs to be cleaned (use tidyr).
 #'
 #'@param filename character, contains the path to the .json or .csv file.
 #'@param frame data.frame, that contains the data.
 #'@param cols atomic character vector, the columns that should be used for clustering.
 #'
-#'@return data.frame, with the preprocessed data that can be clustered.
+#'@return data.frame, with the prepossessed data that can be clustered.
 read_input <- function(filename, frame, cols){
   stopifnot("Either filename or frame should be given"=
               xor(missing(filename), missing(frame)))

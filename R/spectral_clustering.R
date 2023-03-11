@@ -1,4 +1,4 @@
-#'Implementation of the spectral clustering algorithm.
+#'Spectral Clustering Algorithm.
 #'
 #'`spectral_clustering` is a clustering algorithm that reduces the dimension of
 #'the training data and then performs a clustering algorithm on the new
@@ -21,7 +21,7 @@
 #'  Clearly the data points also have to be numeric and from the same vector
 #'  space.
 #'
-#'@param data data.frame, with columns of numeric data. Each row represents one
+#'@param data data.frame, with numeric data. Each row represents one
 #'  data point. The columns are the dimensions.
 #'@param num_clusters numeric value larger than one, the number of clusters.
 #'@param dim_k numeric value smaller than the number of data points, the
@@ -77,7 +77,7 @@ spectral_clustering <- function(
   cluster["kernel"] <- arg_kernel
   cluster["dim_k"] <- dim_k
   cluster["data"] <- data
-  attr(cluster, "cluster") <- "spectral"
+  attr(cluster, "class") <- "spectral"
 
   return(cluster)
 }
@@ -89,14 +89,14 @@ spectral_clustering <- function(
 #'@references \url{https://link.springer.com/book/10.1007/978-3-662-59354-7}
 #'
 #'
-#'@section terms:
+#'@section Terms:
 #' All data points in the input data have to stem from an identical distribution and have to be independent.
 #'
 #' Clearly the data points also have to be numeric and from the same vector space.
-#'
-#'@param data matrix, with columns of numeric data.
-#'Each row represents one data point. The columns are the dimensions.
-#'@param dim_k numeric value smaller than the number of data points, the dimension the data should be projected into.
+#'@param data data.frame, with numeric data. Each row represents one
+#'  data point. The columns are the dimensions.
+#'@param dim_k numeric value smaller than the number of data points, the
+#'  dimension the data should be projected into.
 #'@param arg_kernel Optional arguments for the `calculate_mercer_kernel` function.
 #'
 #'TODO
@@ -130,12 +130,38 @@ calculate_k_projection <- function(data, dim_k, arg_kernel){
   return(betas)
 }
 
-
+#' Mercer Kernel
+#'
+#'`calculate_mercer_kernel` calculates for every two data points in `data` the
+#'result of the kernel function specified in `arg_kernel`and stores it in a
+#'matrix.
+#'
+#'A kernel function is a symmetric, positive definite function R^n kreuz R^n to
+#'R^`dim_k`. Check the implemented kernel functions in args. If you need an
+#'additional function don't hesitate to reach out and we'll try our best to
+#'implement it:)
+#'
+#'@references \url{https://link.springer.com/book/10.1007/978-3-662-59354-7}
+#'
+#'@param data matrix, with numeric data. Each row represents one
+#'  data point. The columns are the dimensions.
+#'@param dim_k numeric value smaller than the number of data points, the
+#'  dimension the data should be projected into.
+#'@param kernel list, optional argument that specify the kernel. Possible options are:
+#'- Gauß Kernel: Default kernel. Call with kernel=list(type="gauß", metric=?, gamma=?)
+#'  Distance metrics can be chosen, check in `dist_func` for possible values.
+#'  Gamma taller than zero can also be freely selected.
+#'- Normed Gauß Kernel:
+#'  Call with kernel=list(type="gauß", normed=TRUE, metric=?, gamma=?)
+#'  Same things listed in Gauß Kernel apply her as well.
+#'  TODO
+#'
+#'@return matrix A, where A_ij (i, j in {1, ..., length(data)}) is the result of the kernel function of ith and jth data point.
 calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, metric="euclidean")){
   # Check that Cluster Data has the right type
   source("R/utils/utils.R")
   source("R/utils/utils_spectral.R")
-  check_input_data(data)
+  check_matrix_data(data)
   data_length <- nrow(data)
 
   stopifnot("Kernel has to be a list"= is.list(kernel))
@@ -180,16 +206,34 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
   return(kernel_matrix)
 }
 
+#' Gauß Kernel
+#'
+#' The Gauß kernel is a kernel that is often used for spectral clustering
+#'
+#' @param x y numeric vectors, the input vectors that we want to calculate the
+#'   kernel of.
+#' @param gamma numeric positive value.
+#' @param metric character, specifies the metric used in the kernel. Possible values
+#'   can be checked in `dist_func`.
+#'
+#' @return numeric value, the result of the gauß kernel, i.e. exp(- gamma *
+#'   dist_func(x, y, type=metric))
 calculate_gauss_kernel <- function(x, y, gamma, metric){
   stopifnot("Gamma has to be numeric"= length(gamma)==1 && is.numeric(gamma))
   return(exp(- gamma * dist_func(x, y, type=metric)))
 }
 
-
+#' Diagonal Matrix of a Mercer Kernel.
+#'
+#' `calculate_diagonal_matrix` is a function used in the spectral clustering process.
+#'
+#' @param mercer_kernel numeric vectors, the input vectors that we want to calculate the
+#'   kernel of.
+#' @return diagonal matrix D with D_ii = sum(mercer_kernel[i,]) for i in {1,.., length(mercer_kernel)}
 calculate_diagonal_matrix <- function(mercer_kernel){
   # check mercer_kernel
   source("R/utils/utils_spectral.R")
-  check_input_data(mercer_kernel)
+  check_matrix_data(mercer_kernel)
   # check kernel properties
   check_kernel_properties(mercer_kernel)
 
@@ -202,9 +246,20 @@ calculate_diagonal_matrix <- function(mercer_kernel){
   return(diagonal_matrix)
 }
 
-calculate_eigenvectors <- function(matrix){
+#' Normalized Eigen Vectors
+#'
+#' `calculate_eigenvectors_symmetric` calculates the eigen vectors of the given symmetric `matrix`. Then it normalizes them based on the `metric`
+#'
+#' @param matrix numeric symmetric matrix.
+#' @param matric the metric used for the normalization
+#' @return numeric matrix, contains eigen vectors from `matrix` normalized based on `metric`.
+#' Eigen vectors in descending order of their eigen values.
+calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
   # import utils
   source("R/utils/utils.R")
+  source("R/utils/utils_spectral.R")
+  check_matrix_data(matrix)
+  stopifnot("Matrix has to be symmetric"=isSymmetric(matrix))
 
   eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors
   # put eigenvectors in ascending order
