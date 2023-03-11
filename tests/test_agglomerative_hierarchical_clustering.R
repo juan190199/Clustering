@@ -146,3 +146,22 @@ times <- c(times, system.time(agglomerative_hierarchical_clustering(data5, K, li
 sizes <- c(nrow(data1), nrow(data2), nrow(data3), nrow(data4), nrow(data5))
 plot(sizes, times, xlab = "Dataset size", ylab = "Time (s)", pch = 19)
 
+###########################
+##    Robustness tests   ##
+###########################
+
+set.seed(123)
+data <- matrix(rnorm(10000), ncol = 10)
+
+add_noise <- function(data, level) {
+  noise <- matrix(rnorm(10000, mean = 0, sd = level), ncol = 10)
+  return(data + noise)
+}
+
+noisy_data <- add_noise(data, 0.1)  # add 10% noise to the data
+
+result <- agglomerative_hierarchical_clustering(noisy_data, K = 5, linkage_fun = "complete")
+original_result <- agglomerative_hierarchical_clustering(data, K = 5, linkage_fun = "complete")
+
+# Compare the two results
+table(result$labels, original_result$labels)
