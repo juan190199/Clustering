@@ -2,7 +2,7 @@
 
 library(testthat)
 
-source("R/utils.R")
+source("R/utils/utils.R")
 source("R/agglomerative_hierarchical_clustering.R")
 
 init_clusters <- function(data) {
@@ -112,3 +112,37 @@ test_that("agglomerative_hierarchical_clustering works as expected", {
   expect_length(output3$clusters, 3)
   expect_equal(output3$method, "average")
 })
+
+############################
+##    Performance tests   ##
+############################
+
+library(simstudy)
+
+# Define the variables and distributions
+def <- defData(varname = "x", dist = "normal", formula = 0, variance = 1)
+
+# Generate datasets of different sizes
+set.seed(101)
+data1 <- as.matrix(genData(10, def))
+data2 <- as.matrix(genData(50, def))
+data3 <- as.matrix(genData(100, def))
+data4 <- as.matrix(genData(500, def))
+data5 <- as.matrix(genData(1000, def))
+
+# Define linkage function and number of clusters
+linkage_fun <- "complete"
+K <- 3
+
+# Time the function execution
+times <- c()
+times <- c(times, system.time(agglomerative_hierarchical_clustering(data1, K, linkage_fun))["elapsed"])
+times <- c(times, system.time(agglomerative_hierarchical_clustering(data2, K, linkage_fun))["elapsed"])
+times <- c(times, system.time(agglomerative_hierarchical_clustering(data3, K, linkage_fun))["elapsed"])
+times <- c(times, system.time(agglomerative_hierarchical_clustering(data4, K, linkage_fun))["elapsed"])
+times <- c(times, system.time(agglomerative_hierarchical_clustering(data5, K, linkage_fun))["elapsed"])
+
+# Plot the results
+sizes <- c(nrow(data1), nrow(data2), nrow(data3), nrow(data4), nrow(data5))
+plot(sizes, times, xlab = "Dataset size", ylab = "Time (s)", pch = 19)
+
