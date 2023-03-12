@@ -1,6 +1,11 @@
-library(tidyverse)
+#library(tidyverse)
 
+
+# !!! do not use this function, it will not be exported !!!
+# perform kMeans algorithm
 kMeans <- function(data, k = 1, maxIterations = 100, setInitialCentroids = NULL) {
+
+  data <- as.matrix(data)
 
   # choose start values for the clusers manually
   init <- ifelse(is.null(setInitialCentroids), TRUE, FALSE)
@@ -62,11 +67,14 @@ kMeans <- function(data, k = 1, maxIterations = 100, setInitialCentroids = NULL)
   list(data = data, clusterIds = clusterIds, clusteredData = cbind(data, clusterIds), centroids = centroids)
 }
 
+
+# !!! do not use this function, it will not be exported !!!
+# perform kMeans++ algorithm
 kMeans_pp <- function(data, k, maxIterations = 100) {
 
   X <- data
 
-  # choose the first cluter center randomly
+  # choose the first cluster center randomly
   centroids <- rbind(X[sample(nrow(X), 1), ])
 
   # repeat until k cluster centers were found
@@ -87,25 +95,76 @@ kMeans_pp <- function(data, k, maxIterations = 100) {
 }
 
 
+#' kMeans algorithm
+#'
+#' Use this algorithm to identify a given number of clusters.
+#'
+#' kMeans clustering is a method of vector quantization, originally from signal
+#' processing, that aims to partition n observations into k clusters in which
+#' each observation belongs to the cluster with the nearest mean (cluster
+#' centers or cluster centroid), serving as a prototype of the cluster.
+#'
+#' @param data A matrix, data.frame, tibble, with two numeric colums and at least two rows
+#' @param k A number of how many clusters should be detected
+#' @param maxIterations A number. kMeans converges fast set \code{maxIterations} to 10-100 is mostly ok
+#' @param setInitialCentroids A matrix with x,y columns. Set start values ie points, if not than
+#' the algorithm does that randomly
+#' @param type A character string. What kind of algorithm here the standart kMeans and kMeans++ algorithm
+#' @return An object of class `kMeans` with components:
+#' \item{data}{original data}
+#' \item{clusterIds}{A numeric vector with the cluster assignments}
+#' \item{clusteredData}{A matrix with the points and its assigned cluster}
+#' \item{centroids}{A numeric vector with the center points of the clusters}
+#' @examples
+#' n <- 50
+#' data <- cbind(wrw = c(runif(n, min=0, max=3), runif(n, min=5, max=6), runif(n, min=8, max=10)),
+#'               yys = c(runif(n, min=0, max=3), runif(n, min=2, max=7), runif(n, min=6, max=10)))
+#'
+#' km <- new_kMeans(data, 3, 20, type = "kMeans++")
+#'
+#'
+#' #visualize
+#' plot(km, titles = "ewgfsgw")
+#' print(km)
+#' @export
+new_kMeans <- function(data, k = 1, maxIterations = 100, setInitialCentroids = NULL, type = "kMeans"){
 
-new_kMeans_cluster <- function(data, k = 1, maxIterations = 100, setInitialCentroids = NULL, type = "kMeans"){
+  # type =
+  # kMeans
+  # kMeans++
+
+  data <- as.matrix(data)
+  dd <- data
+
+  stopifnot("type must be a character string" = typeof(type) == "character" | length(type) == 1)
+  stopifnot("type must be a character string" = length(type) == 1)
 
   if(type == "kMeans++" && !is.null(setInitialCentroids)){
     stop("For kMeans++ algorithm it is not possible to set setInitialCentroids to a non NULL value")
   }
 
   stopifnot("Wrong type of algorithm ==> set it to kMeans or kMeans++" = type == "kMeans" | type == "kMeans++")
-  stopifnot("data must be a matrix" = class(data)[1] == "matrix")
-  stopifnot("data must be a matirx with numeric values" = typeof(data) == "integer" | typeof(data) == "double" | typeof(data) == "numeric")
-  stopifnot("k must be greater than 0" = k > 0)
+
+  stopifnot("data must contain numeric values" = typeof(dd) == "double" | typeof(dd) == "integer" | typeof(dd) == "numeric")
+  stopifnot("data is empty or does not have rows" = !is.null(nrow(dd)))
+  stopifnot("data is empty or does not have columns" = !is.null(ncol(dd)))
+  stopifnot("data must have two columns" = ncol(dd) == 2)
+  stopifnot("data must have at least two rows" = nrow(dd) >= 2)
+  stopifnot("data may contains non finite values such as Inf, NA, NULL" = all(is.finite(dd)))
+
   stopifnot("k must be a number" = typeof(k) == "integer" | typeof(k) == "double")
-  stopifnot("maxIterations must be greater than 0" = maxIterations > 0)
+  stopifnot("k must be greater than 0" = k > 0)
+
   stopifnot("maxIterations must be a number" = typeof(maxIterations) == "integer" | typeof(maxIterations) == "double")
+  stopifnot("maxIterations must be greater than 0" = maxIterations > 0)
+
   stopifnot("setInitialCentroids must be a matrix or NULL" = is.null(setInitialCentroids) |  class(setInitialCentroids)[1] == "matrix")
   stopifnot("setInitialCentroids must be a matirx with numeric values" = typeof(setInitialCentroids) == "integer" |
               typeof(setInitialCentroids) == "double" | typeof(setInitialCentroids) == "numeric" | is.null(setInitialCentroids))
+  stopifnot("setInitialCentroids is empty or does not have rows" = !is.null(nrow(setInitialCentroids)) | is.null(setInitialCentroids))
+  stopifnot("setInitialCentroids is empty or does not have columns" = !is.null(ncol(setInitialCentroids))| is.null(setInitialCentroids))
   stopifnot("number of rows from setInitialCentroids must be equal to k" = k == nrow(setInitialCentroids) | is.null(setInitialCentroids))
-
+  stopifnot("setInitialCentroids may contains non finite values such as Inf, NA, NULL" = all(is.finite(setInitialCentroids)) | is.null(setInitialCentroids))
 
   if(type == "kMeans"){
     km <- kMeans(data = data, k = k, maxIterations = maxIterations, setInitialCentroids = setInitialCentroids)
@@ -118,12 +177,45 @@ new_kMeans_cluster <- function(data, k = 1, maxIterations = 100, setInitialCentr
   }
 }
 
-plot.kMeans <- function(obj){
-  plot(obj$data, col = obj$clusterIds)
-  points(obj$centroids, col = "blue", lwd = 3)
+
+#' Plot kMeans class
+#'
+#' @param obj A kMeans class, call \code{new_kMeans()} to create an kMeans object
+#' @param titles A character vector with length 1. Here the titles of the plot
+#' @examples
+#' n <- 50
+#' data <- cbind(wrw = c(runif(n, min=0, max=3), runif(n, min=5, max=6), runif(n, min=8, max=10)),
+#'               yys = c(runif(n, min=0, max=3), runif(n, min=2, max=7), runif(n, min=6, max=10)))
+#'
+#' km <- new_kMeans(data, 3, 20, type = "kMeans++")
+#'
+#'
+#' #visualize
+#' plot(km, titles = "ewgfsgw")
+#' @export
+plot.kMeans <- function(obj, titles = "Cluster Plot", ...){
+
+  stopifnot("titles must be a character vector" = typeof(titles) == "character")
+
+  plot(obj$data, main = head(titles, 1), col = rainbow(max(obj$clusterIds))[obj$clusterIds], pch = 20)
+  points(obj$centroids, col = "black", lwd = 4)
 }
 
-print.kMeans <- function(obj){
+
+#' Print kMeans class
+#'
+#' @param obj A kMeans class, call \code{new_kMeans()} to create an kMeans object
+#' @examples
+#' n <- 50
+#' data <- cbind(wrw = c(runif(n, min=0, max=3), runif(n, min=5, max=6), runif(n, min=8, max=10)),
+#'               yys = c(runif(n, min=0, max=3), runif(n, min=2, max=7), runif(n, min=6, max=10)))
+#'
+#' km <- new_kMeans(data, 3, 20, type = "kMeans++")
+#'
+#' print(km)
+#' @export
+print.kMeans <- function(obj, ...){
+
   cat("center points:\n")
   print(obj$centroids)
   cat("\ncluster membership data:\n")
@@ -132,30 +224,20 @@ print.kMeans <- function(obj){
 }
 
 
+
+
+################################### Example usage ###################################################
+
+#n <- 50
+#data <- cbind(wrw = c(runif(n, min=0, max=3), runif(n, min=5, max=6), runif(n, min=8, max=10)),
+#              yys = c(runif(n, min=0, max=3), runif(n, min=2, max=7), runif(n, min=6, max=10)))
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# # Generiere zufällige Datenpunkte
-# #set.seed(123)
-# #data <- matrix(rnorm(1000), ncol = 2)
-#
-# n <- 100
-# data <- cbind(c(runif(n, min=0, max=3), runif(n, min=5, max=6), runif(n, min=8, max=10)),
-#               c(runif(n, min=0, max=3), runif(n, min=2, max=7), runif(n, min=6, max=10)))
-#
-# km <- new_kMeans_cluster(data, 3, 10, type = "kMeans++")
-#
-#
-# # Visualisiere die Ergebnisse
-# plot(km)
-# print(km)
+#km <- new_kMeans(data, 3, 20, type = "kMeans++")
+
+
+# visualisize
+#plot(km, titles = "ewgfsgw")
+#print(km)
 
 
 
