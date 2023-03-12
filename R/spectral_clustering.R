@@ -74,10 +74,8 @@ spectral_clustering <- function(
 
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
 
-  cluster["kernel"] <- arg_kernel
-  cluster["dim_k"] <- dim_k
   cluster["data"] <- data
-  attr(cluster, "class") <- "spectral"
+  attr(cluster, "class") <- c("spectral", arg_cluster_fun$type)
 
   return(cluster)
 }
@@ -275,42 +273,52 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
   return(eigen_vectors)
 }
 
-add_point_to_spectral_cluster <- function(cluster, x){
-  source("R/utils/spectral_util.R")
-  check_spectral_cluster(cluster)
-
-  stopifnot("x and the cluster data have to be in the same vector space."=
-              length(x) == ncol(cluster$data))
-  stopifnot("x has to be a numeric vector"=
-              is.vector(x) && is.numeric(x))
-
-  n <- nrow(data)
-  dim_k <- cluster$dim_k
-
-  normed_kernel <- calculate_mercer_kernel(data=data, kernel=c(list(normed=TRUE), cluster$kernel))
-
-  data <- rbind(data, x)
-  kernel <- calculate_mercer_kernel(data=data, kernel = cluster$kernel)
-
-  # Calculation of the projection matrix based on definition 10.55 Richter
-  projection <- vector("numeric", length = dim_k)
-  prefactor <- (1/n * sum(kernel[n+1, ]))**(-1)
-  # Calculate the eigen values in the formula
-  eigen_values <- eigen(1/n * normed_kernel, symmetric=TRUE)$values
-
-  calculate_extra_kernel <- function(i, j){
-    denominator <- 1/n**2 * sum(kernel[1:n, 1:n])
-    first_term <- kernel[i, j]
-    nominator_one <- 1/n * sum(kernel[i, 1:n])
-    nominator_two <- 1/n * sum(kernel[1:n, j])
-
-    return(first_term - nominator_one*nominator_two / denominator)
-  }
-
-  for(j in seq(dim_k)){
-    eigen_value <- eigen_values[j]
-    sum <- sum(sapply(seq(n), function(y){
-      calculate_extra_kernel(y, n+1)
-    }))
-  }
-}
+# add_point_to_spectral_cluster <- function(cluster, x){
+#   data <- cluster$data
+#
+#   stopifnot("x and the cluster data have to be in the same vector space."=length(x) == ncol(cluster$data))
+#   stopifnot("x has to be a numeric vector"= is.vector(x) && is.numeric(x))
+#   data <- rbind(data, x)
+#
+#   spectral_clustering(data, arg_kernelcluster$kernel)
+# }
+#
+# weird_function <- function(){
+#   source("R/utils/spectral_util.R")
+#   check_spectral_cluster(cluster)
+#
+#   stopifnot("x and the cluster data have to be in the same vector space."=
+#               length(x) == ncol(cluster$data))
+#   stopifnot("x has to be a numeric vector"=
+#               is.vector(x) && is.numeric(x))
+#
+#   n <- nrow(data)
+#   dim_k <- cluster$dim_k
+#
+#   normed_kernel <- calculate_mercer_kernel(data=data, kernel=c(list(normed=TRUE), cluster$kernel))
+#
+#   data <- rbind(data, x)
+#   kernel <- calculate_mercer_kernel(data=data, kernel = cluster$kernel)
+#
+#   # Calculation of the projection matrix based on definition 10.55 Richter
+#   projection <- vector("numeric", length = dim_k)
+#   prefactor <- (1/n * sum(kernel[n+1, ]))**(-1)
+#   # Calculate the eigen values in the formula
+#   eigen_values <- eigen(1/n * normed_kernel, symmetric=TRUE)$values
+#
+#   calculate_extra_kernel <- function(i, j){
+#     denominator <- 1/n**2 * sum(kernel[1:n, 1:n])
+#     first_term <- kernel[i, j]
+#     nominator_one <- 1/n * sum(kernel[i, 1:n])
+#     nominator_two <- 1/n * sum(kernel[1:n, j])
+#
+#     return(first_term - nominator_one*nominator_two / denominator)
+#   }
+#
+#   for(j in seq(dim_k)){
+#     eigen_value <- eigen_values[j]
+#     sum <- sum(sapply(seq(n), function(y){
+#       calculate_extra_kernel(y, n+1)
+#     }))
+#   }
+# }
