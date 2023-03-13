@@ -74,8 +74,11 @@ spectral_clustering <- function(
 
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
 
-  cluster["data"] <- data
-  attr(cluster, "class") <- c("spectral", get_cluster_class(cluster_fun))
+  cluster <- c(list("data"=data), cluster)
+
+  # get name of the cluster fun
+  cluster_fun_name <- deparse(substitute(cluster_fun))
+  attr(cluster, "class") <- c("spectral", get_cluster_class(cluster_fun_name))
 
   return(cluster)
 }
@@ -328,3 +331,11 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
 #     }))
 #   }
 # }
+# iris_std <- data.matrix(scale(iris[, 1:4]))
+cluster <- spectral_clustering(iris_std,
+                              num_clusters=2,
+                              dim_k=1,
+                              cluster_fun=agglomerative_hierarchical_clustering,
+                              arg_cluster_fun = "complete")
+# sloop::s3_dispatch(plot_cluster(cluster))
+# plot_cluster(cluster)
