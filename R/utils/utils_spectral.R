@@ -15,7 +15,7 @@ check_matrix_data <- function(data){
 #' `check_kernel_properties` controls that the given matrix is a mercer kernel.
 #'
 #' @param kernel numeric matrix, hopefully a mercer kernel.
-check_kernel_properties <- function(kernel){
+check_kernel_properties <- function(kernel, is_continuous=FALSE){
   stopifnot("A kernel has to be quadratic"=
               nrow(kernel) == ncol(kernel))
   stopifnot("The kernel has to be symmetric."=
@@ -24,8 +24,10 @@ check_kernel_properties <- function(kernel){
               matrixcalc::is.positive.semi.definite(kernel, tol=1e-8))
   # There is no option I know of, that can check based on the matrix
   # if the kernel function is continuous
-  warning("Keep in mind, kernel function should be continuous.
-          No option to check that in the coding.")
+  if(!is_continuous){
+    warning("Keep in mind, kernel function should be continuous.
+            No option to check that in the coding.")
+  }
 }
 
 #' Sanity Check Spectral Cluster
