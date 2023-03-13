@@ -1,9 +1,9 @@
 #' Hi
-plot_cluster <- function(cluster, title, colors, legend){
+plot_cluster <- function(cluster, title, legend, ...){
   UseMethod("plot_cluster")
 }
 
-plot_cluster.spectral <- function(cluster, title, colors, legend){
+plot_cluster.spectral <- function(cluster, title, legend, ...){
   NextMethod()
 }
 
@@ -87,8 +87,61 @@ plot_cluster.kMeans <- function(cluster, title=NULL){
   legend("bottomright", inset = c(-0.2, 0), legend = c("centroids"), col = "black", pch = 19)
 }
 
-plot_cluster.optics <- function(){
+#' Plot optics class
+#'
+#' @param obj A optics class, call \code{new_optics()} to create an optics object
+#' @param orderline A logical to determine if the data points should be connected with lines in reachability order
+#' @param type A character to decide which plot should be displayed: `reachability_cluster` show both plots, `reachability` show reachability plot
+#' `cluster` show cluster plot
+#' @param titles A character vector with length 2. Here the titles of the plots for reachability and cluster
+#' @param cluster_colored A logical. Should the data be colored by the cluster assignments
+#' @examples
+#' n <- 100
+#' data <- cbind(xval = c(runif(n*2, min=0, max=3), runif(n, min=5, max=6), runif(n/11, min=8, max=10)),
+#'               yval = c(runif(n*2, min=0, max=3), runif(n, min=2, max=7), runif(n/11, min=6, max=10)))
+#'
+#' res <- new_optics(data = data, minPts = 7, num_cluster = 3)
+#' plot(res)
+#' print(res)
+#' @export
+plot_cluster.optics <- function(cluster, orderline = FALSE, type = "reachability_cluster", titles = c("Cluster plot", "Reachability plot"), cluster_colored = TRUE, ...){
+    # type =
+    # reachability_cluster, show both plots
+    # reachability, show reachability plot
+    # cluster, show cluster plot
 
+    stopifnot("type must be a character" = typeof(type) == "character")
+    stopifnot("type must be a character string" = length(type) == 1)
+
+    stopifnot("Wrong type please choose: reachability_cluster or reachability or cluster" = type == "reachability_cluster" |
+                type == "reachability" | type == "cluster")
+
+    stopifnot("titles must be a character vector" = typeof(titles) == "character")
+    stopifnot("orderline must be a logical type" = typeof(orderline) == "logical")
+    stopifnot("cluster_colored must be a logical type" = typeof(cluster_colored) == "logical")
+
+    x_name <- colnames(cluster$ordered_data)[1]
+    y_name <- colnames(cluster$ordered_data)[2]
+
+    cl_col <- 1
+
+    if(cluster_colored) cl_col <- rainbow(max(cluster$clusterIds))[cluster$clusterIds]
+
+
+    if(type == "reachability_cluster"){
+      par(mfrow=c(2,1))
+    }
+
+    if(type == "reachability_cluster" | type == "cluster"){
+      plot(cluster$ordered_data, main=head(titles, 1), xlab=x_name, ylab=y_name, col = cl_col, pch = 20)
+    }
+
+    if(type == "reachability_cluster" | type == "reachability"){
+      if(orderline) polygon(cluster$ordered_data[,1], cluster$ordered_data[,2])
+
+      bp <- barplot(height = cluster$reachability, main=tail(titles, 1), xlab="data points", ylab="Reachability score",
+                    col = cl_col, border = cl_col, names = seq_along(cluster$reachability))
+    }
 }
 
 plot_cluster.dbscan <- function(){
