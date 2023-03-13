@@ -46,7 +46,8 @@ check_spectral_cluster <- function(cluster){
 get_cluster_class <- function(func){
   if(func == "agglomerative_hierarchical_clustering") "hierarchical"
   else if(func == "kmedoid") "kmedoid"
-  else if(func == "kMeans") "kmeans"
+  else if(func == "new_kMeans") "kMeans"
   else if(func == "optics") "optics"
   else if(func == "dbscan") "dbscan"
+  else stop("No proper cluster function was provided")
 }

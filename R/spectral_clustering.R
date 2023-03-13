@@ -75,15 +75,20 @@ spectral_clustering <- function(
   if(missing(arg_cluster_fun)){
     cluster <- cluster_fun(alphas, num_clusters)
   } else{
-    cluster <- cluster_fun(alphas, num_clusters, arg_cluster_fun)
+    cluster <- rlang::exec(cluster_fun, alphas, num_clusters, !!!arg_cluster_fun)
   }
 
-
-  cluster <- c(list("data"=data), cluster)
+  cluster$data <- data
 
   # get name of the cluster fun
   cluster_fun_name <- deparse(substitute(cluster_fun))
   attr(cluster, "class") <- c("spectral", get_cluster_class(cluster_fun_name))
+
+  if(attr(cluster, "class")[2] == "kMeans" && !missing(arg_cluster_fun)){
+    if(!is.null(arg_cluster_fun$type)){
+      attr(cluster, "class")[2] == arg_cluster_fun$type
+    }
+  }
 
   return(cluster)
 }
@@ -338,13 +343,13 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
 # }
 # iris_std <- data.matrix(scale(iris[, 1:4]))
 cluster <- spectral_clustering(iris_std,
-                              num_clusters=2,
-                              dim_k=1,
-                              cluster_fun=agglomerative_hierarchical_clustering,
-                              arg_cluster_fun = "complete")
+                              num_clusters=3,
+                              dim_k=2,
+                              cluster_fun=new_kMeans,
+                              arg_cluster_fun = list(type="kMeans"))
 # sloop::s3_dispatch(plot_cluster(cluster))
 # plot_cluster(cluster)
-# cluster <- spectral_clustering(iris_std,
-#                               num_clusters=3,
-#                               dim_k=2,
-#                               cluster_fun=kmedoid)
+cluster <- spectral_clustering(iris_std,
+                              num_clusters=3,
+                              dim_k=2,
+                              cluster_fun=kmedoid)
