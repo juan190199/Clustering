@@ -3,13 +3,11 @@
 .Rhistory
 .RData
 .Ruserdata
-
 ### Pycharm ###
 .idea/
-
 ### Django ###
 *.log
 __pycache__/
-
 ## macOS ##
 *.DS_Store
+.httr-oauth

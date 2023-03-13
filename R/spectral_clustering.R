@@ -243,7 +243,7 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
 #'  !!! This function won't be exported !!!
 calculate_gauss_kernel <- function(x, y, gamma, metric){
   stopifnot("Gamma has to be numeric"= length(gamma)==1 && is.numeric(gamma))
-  return(exp(- gamma * dist_func(x, y, type=metric)**2))
+  return(exp(- gamma * dist_func(x, y, type=metric)))
 }
 
 #' Diagonal Matrix of a Mercer Kernel.
@@ -299,14 +299,14 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
 }
 
 # iris_std <- data.matrix(scale(iris[, 1:4]))
-cluster <- spectral_clustering(iris_std,
-                              num_clusters=3,
-                              dim_k=2,
-                              cluster_fun=new_kMeans,
-                              arg_cluster_fun = list(type="kMeans"))
+# cluster <- spectral_clustering(iris_std,
+#                               num_clusters=3,
+#                               dim_k=2,
+#                               cluster_fun=new_kMeans,
+#                               arg_cluster_fun = list(type="kMeans"))
 # sloop::s3_dispatch(plot_cluster(cluster))
 # plot_cluster(cluster)
-cluster <- spectral_clustering(iris_std,
-                              num_clusters=3,
-                              dim_k=2,
-                              cluster_fun=kmedoid)
+# cluster <- spectral_clustering(data,
+#                               num_clusters=3,
+#                               dim_k=2,
+#                               cluster_fun=kmedoid)

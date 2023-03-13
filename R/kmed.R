@@ -133,6 +133,8 @@ kmedoid <- function(data, k=1, iter=1){
         }
     }
 
+    cluster <- list(clusters = clusters, medoids = medoids, cost = cost,data =data)
+    attr(cluster, "class") <- "kmedoid"
     # Return results
-    return(list(clusters = clusters, medoids = medoids, cost = cost,data =data))
+    return(cluster)
 }

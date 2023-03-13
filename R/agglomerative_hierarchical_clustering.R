@@ -8,9 +8,6 @@
 ## 6. Centroid linkage function
 ## 7. Mcquitty linkage function
 
-
-source("R/utils/agglomerative_hierarchical_clustering_utils.R")
-
 agglomerative_hierarchical_clustering <- function(data, K, linkage_fun, dist_method = "euclidean") {
   N <- nrow(data)
   measure <- get_distance_measure(linkage_fun)
@@ -89,7 +86,11 @@ agglomerative_hierarchical_clustering <- function(data, K, linkage_fun, dist_met
   run_algorithm()
   print_()
 
-  output <- list(order = order, clusters = clusters, method = linkage_fun, labels = labels)
+  output <- list(order = order, clusters = clusters, method = linkage_fun, labels = labels, data = data)
+
+  attr(output, "class") <- "hierarchical"
+
+
   return(output)
 }
 

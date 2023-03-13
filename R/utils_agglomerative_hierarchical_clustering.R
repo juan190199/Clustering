@@ -1,5 +1,4 @@
 library(dplyr)
-source("R/utils/utils.R")
 
 ############################
 ##    Linkage functions   ##

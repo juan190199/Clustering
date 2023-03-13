@@ -52,6 +52,8 @@ read_input <- function(filename, frame, cols){
 
 dist_func <- function(p, q, type = "euclidean") {
   # Check input data
+  force(p)
+  force(q)
   stopifnot(is.numeric(p) && is.vector(p) &&
               is.numeric(q) && is.vector(q))
   stopifnot(length(p) == length(q))

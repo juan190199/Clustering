@@ -1,0 +1,99 @@
+---
+title: "Test Package with Spotifyr DataSet"
+output: html_notebook
+---
+Our goal is to perform different clustering methods on tracks from several artist.\
+I selected ... but if you set up the [spotifyr](https://www.rcharlie.com/spotifyr/) package, like described below, feel free to try out the clustering methods for other artists as well.
+
+If not you can skip directly to the second part of part 2.
+
+The data we will look at contains information about the
+
+- **danceability** (number between zero and one)
+- **energy** (number between zero and one)
+- **acousticness**
+- **duration_ms** (duration in ms)
+- **loudness**
+- **tempo**
+- **instrumentalness** 
+
+# Import Data Set
+### 1. Set up spotifyr
+Set up spotifyr like described [here](https://www.rcharlie.com/spotifyr/)
+```{r}
+library(spotifyr)
+Sys.setenv(SPOTIFY_CLIENT_ID = 'xxxxxxxxxxxxxxxxxxxxx')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = 'xxxxxxxxxxxxxxxxxxxxx')
+
+access_token <- get_spotify_access_token()
+```
+
+### 2. Get the artist data
+Import the data and apply some data tidying
+```{r}
+beatles <- get_artist_audio_features('the beatles')
+
+beatles %>% 
+  select(danceability, energy, acousticness, duration_ms, loudness, tempo, instrumentalness) %>% 
+  drop_na() -> beatles
+```
+Or simply import it from the .csv file
+```{r}
+library(readr)
+beatles <- read_csv(beatles.csv)
+```
+
+# Apply various clustering methods
+## Original Data 
+```{r}
+beatles %>% 
+  arrange(danceability) %>% 
+  head(100) %>% 
+  select(duration_ms, tempo) -> data
+plot(data)
+```
+## KMeans
+```{r}
+kMeans <- new_kMeans(data = data, k=2)
+plot_cluster(kMeans)
+```
+## KMedoids
+```{r}
+kMedoids <- kmedoid(data = data, k=2, iter=20)
+attributes(kMedoids)
+plot_cluster(kMedoids)
+```
+## Hierarchichal
+```{r}
+data <- as.matrix(data)
+hierarchical <- agglomerative_hierarchical_clustering(data = data, K=2, linkage_fun = "single")
+plot_cluster(hierarchical)
+```
+
+## Spectral
+### KMeans
+```{r}
+spectral <- cluster <- spectral_clustering(data,
+                              num_clusters=3,
+                              dim_k=2,
+                              cluster_fun=new_kMeans,
+                              arg_cluster_fun = list(type="kMeans"))
+plot_cluster(spectral)
+```
+### KMediods
+```{r}
+spectral <- spectral_clustering(data,
+                              num_clusters=3,
+                              dim_k=2,
+                              cluster_fun=kmedoid)
+plot_cluster(spectral)
+```
+### Hierarchical
+```{r}
+spectral <- spectral_clustering(data,
+                              num_clusters=3,
+                              dim_k=2,
+                              cluster_fun=agglomerative_hierarchical_clustering,
+                              arg_cluster_fun = list(linkage_fun="single"))
+plot_cluster(spectral)
+```
