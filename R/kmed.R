@@ -38,6 +38,7 @@ dista3D <- function(x,y) {
 #' kmedoid(iris[3:4],3,5)
 #'@export
 kmedoid <- function(data, k=1, iter=1){
+    force(data)
     stopifnot('Number of medoids k has to be greater than 0!'= k > 0)
     stopifnot('Number of iterations has to be greater than 0!'= iter > 0)
     stopifnot('Clustering is only possible for 2 and 3 dimensional data so far!'= ncol(data) %in% c(2,3))

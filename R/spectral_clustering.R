@@ -72,7 +72,12 @@ spectral_clustering <- function(
 
   alphas <- calculate_k_projection(data, dim_k=dim_k, arg_kernel=arg_kernel)
 
-  cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
+  if(missing(arg_cluster_fun)){
+    cluster <- cluster_fun(alphas, num_clusters)
+  } else{
+    cluster <- cluster_fun(alphas, num_clusters, arg_cluster_fun)
+  }
+
 
   cluster <- c(list("data"=data), cluster)
 
@@ -339,3 +344,7 @@ cluster <- spectral_clustering(iris_std,
                               arg_cluster_fun = "complete")
 # sloop::s3_dispatch(plot_cluster(cluster))
 # plot_cluster(cluster)
+# cluster <- spectral_clustering(iris_std,
+#                               num_clusters=3,
+#                               dim_k=2,
+#                               cluster_fun=kmedoid)
