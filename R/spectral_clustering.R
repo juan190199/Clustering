@@ -75,7 +75,7 @@ spectral_clustering <- function(
   cluster <- cluster_fun(data, num_clusters, arg_cluster_fun)
 
   cluster["data"] <- data
-  attr(cluster, "class") <- c("spectral", arg_cluster_fun$type)
+  attr(cluster, "class") <- c("spectral", get_cluster_class(cluster_fun))
 
   return(cluster)
 }
@@ -99,7 +99,8 @@ spectral_clustering <- function(
 #'
 #'TODO
 #'
-#'@return matrix, with the transformed data points
+#' @return matrix, with the transformed data points
+#' @export
 calculate_k_projection <- function(data, dim_k, arg_kernel){
   stopifnot("data has to be a matrix or data.frame"=
               is.data.frame(data) || is.matrix(data))
@@ -111,7 +112,7 @@ calculate_k_projection <- function(data, dim_k, arg_kernel){
 
   d_nsquare <- diagonal_matrix**(-1/2)
   d_nsquare[d_nsquare == Inf] <- 0
-  eigenvectors <- calculate_eigenvectors(
+  eigenvectors <- calculate_eigenvectors_symmetric(
     d_nsquare %*% laplacian_matrix %*% d_nsquare
   )
 
@@ -128,7 +129,7 @@ calculate_k_projection <- function(data, dim_k, arg_kernel){
   return(betas)
 }
 
-#' Mercer Kernel
+#'Mercer Kernel
 #'
 #'`calculate_mercer_kernel` calculates for every two data points in `data` the
 #'result of the kernel function specified in `arg_kernel`and stores it in a
@@ -141,20 +142,23 @@ calculate_k_projection <- function(data, dim_k, arg_kernel){
 #'
 #'@references \url{https://link.springer.com/book/10.1007/978-3-662-59354-7}
 #'
-#'@param data matrix, with numeric data. Each row represents one
-#'  data point. The columns are the dimensions.
+#'@param data matrix, with numeric data. Each row represents one data point. The
+#'  columns are the dimensions.
 #'@param dim_k numeric value smaller than the number of data points, the
 #'  dimension the data should be projected into.
-#'@param kernel list, optional argument that specify the kernel. Possible options are:
+#'@param kernel list, optional argument that specify the kernel. Possible
+#'  options are:
 #'- Gauß Kernel: Default kernel. Call with kernel=list(type="gauß", metric=?, gamma=?)
 #'  Distance metrics can be chosen, check in `dist_func` for possible values.
 #'  Gamma taller than zero can also be freely selected.
 #'- Normed Gauß Kernel:
-#'  Call with kernel=list(type="gauß", normed=TRUE, metric=?, gamma=?)
-#'  Same things listed in Gauß Kernel apply her as well.
-#'  TODO
+#'  Call with kernel=list(type="gauß", normed=TRUE, metric=?, gamma=?) Same
+#'  things listed in Gauß Kernel apply her as well. TODO
 #'
-#'@return matrix A, where A_ij (i, j in {1, ..., length(data)}) is the result of the kernel function of ith and jth data point.
+#'@return matrix A, where A_ij (i, j in {1, ..., length(data)}) is the result of
+#'  the kernel function of ith and jth data point.
+#'
+#' @export
 calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, metric="euclidean")){
   # Check that Cluster Data has the right type
   source("R/utils/utils.R")
@@ -205,6 +209,8 @@ calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, me
 }
 
 #' Gauß Kernel
+#'
+#'
 #'
 #' The Gauß kernel is a kernel that is often used for spectral clustering
 #'

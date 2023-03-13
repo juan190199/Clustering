@@ -28,7 +28,7 @@ check_kernel_properties <- function(kernel){
           No option to check that in the coding.")
 }
 
-#' Sanity Spectral Cluster
+#' Sanity Check Spectral Cluster
 #'
 #' `check_spectral_cluster` controls that the given list is a spectral cluster.
 #'
@@ -40,4 +40,13 @@ check_spectral_cluster <- function(cluster){
               !is.null(cluster$kernel))
   stopifnot("The projection dimension dim_k is missing"=
               !is.null(cluster$dim_k))
+}
+
+
+get_cluster_class <- function(func){
+  if(func == "agglomerative_hierarchical_clustering") "hierarchical"
+  else if(func == "kmedoid") "kmediod"
+  else if(func == "kMeans") "kmeans"
+  else if(func == "optics") "optics"
+  else if(func == "dbscan") "dbscan"
 }
