@@ -3,6 +3,8 @@
 #' `check_matrix_data` controls that `data` contains a matrix.
 #'
 #' @param data hopefully a numeric matrix.
+#'
+#' !!! This function won't be exported !!!
 check_matrix_data <- function(data){
   stopifnot("The cluster values have to be integer or double."=
               is.numeric(data))
@@ -15,6 +17,9 @@ check_matrix_data <- function(data){
 #' `check_kernel_properties` controls that the given matrix is a mercer kernel.
 #'
 #' @param kernel numeric matrix, hopefully a mercer kernel.
+#' @param is_continuous logical, the kernel has to be continuous.
+#'
+#'   !!! This function won't be exported !!!
 check_kernel_properties <- function(kernel, is_continuous=FALSE){
   stopifnot("A kernel has to be quadratic"=
               nrow(kernel) == ncol(kernel))
@@ -35,16 +40,27 @@ check_kernel_properties <- function(kernel, is_continuous=FALSE){
 #' `check_spectral_cluster` controls that the given list is a spectral cluster.
 #'
 #' @param cluster list, hopefully a spectral cluster.
+#'
+#'   !!! This function won't be exported !!!
 check_spectral_cluster <- function(cluster){
   stopifnot("Cluster has to be spectral."=
               attr(cluster, "class") == "spectral" )
-  stopifnot("The kernel is missing"=
-              !is.null(cluster$kernel))
-  stopifnot("The projection dimension dim_k is missing"=
-              !is.null(cluster$dim_k))
+  stopifnot("We need a second Clustering method"=
+              length(attr(cluster, "class")))
+  stopifnot("Clustering method isn't implemented yet."=
+              attr(cluster, "class")[2] %in% c("hierarchical", "kmedoid", "kMeans", "optics", "dbscan") )
 }
 
-
+#' Clustering Method Spectral
+#'
+#' `get_cluster_class` returns the clustering method used in the spectral
+#' clustering. Is used to get the class attribute for a spectral clustering
+#' object.
+#'
+#' @param func character, the function of the clustering method as string.
+#' @return character, the clustering method as string.
+#'
+#'   !!! This function won't be exported !!!
 get_cluster_class <- function(func){
   if(func == "agglomerative_hierarchical_clustering") "hierarchical"
   else if(func == "kmedoid") "kmedoid"

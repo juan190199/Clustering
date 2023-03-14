@@ -10,9 +10,9 @@ plot_cluster.spectral <- function(cluster, title, legend, ...){
 plot_cluster.hierarchical <- function(cluster, title=NULL, legend = unique(cluster$labels)){
   if(is.null(title)){
     if(attr(cluster, "class")[1] == "spectral"){
-      title <- "Spectral Clustering (hierarchichal)"
+      title <- "Spectral Clustering (hierarchical)"
     } else{
-      title <- "Hierarchichal Clustering"
+      title <- "Hierarchical Clustering"
     }
   } else{
     stopifnot("Title has to be a character vector"= is.vector(title) && is.character(title))
