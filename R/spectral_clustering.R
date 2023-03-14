@@ -79,6 +79,7 @@ spectral_clustering <- function(
   }
 
   cluster$data <- data
+  cluster$alphas <- alphas
 
   # get name of the cluster fun
   cluster_fun_name <- deparse(substitute(cluster_fun))
@@ -172,7 +173,7 @@ calculate_k_projection <- function(data, dim_k, arg_kernel){
 #'  the kernel function of ith and jth data point.
 #'
 #' @export
-calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=10, metric="euclidean")){
+calculate_mercer_kernel <- function(data, kernel=list(type="gauß", gamma=1/10, metric="euclidean")){
   # Check that Cluster Data has the right type
   check_matrix_data(data)
   data_length <- nrow(data)
@@ -259,7 +260,7 @@ calculate_diagonal_matrix <- function(mercer_kernel, is_continuous=FALSE){
   # check mercer_kernel
   check_matrix_data(mercer_kernel)
   # check kernel properties
-  check_kernel_properties(mercer_kernel, is_continuous=FALSE)
+  check_kernel_properties(mercer_kernel, is_continuous=is_continuous)
 
   n <- nrow(mercer_kernel)
   diagonal_matrix <- matrix(0, nrow = n, ncol = n)
@@ -284,7 +285,7 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
   check_matrix_data(matrix)
   stopifnot("Matrix has to be symmetric"=isSymmetric(matrix))
 
-  eigen_vectors <- eigen(matrix, symmetric=TRUE)$vectors
+  eigen_vectors <- eigen(matrix, symmetric = TRUE)$vectors
   # put eigenvectors in ascending order
   eigen_vectors <- eigen_vectors[, ncol(eigen_vectors):1]
 
@@ -306,7 +307,12 @@ calculate_eigenvectors_symmetric <- function(matrix, metric="euclidean"){
 #                               arg_cluster_fun = list(type="kMeans"))
 # sloop::s3_dispatch(plot_cluster(cluster))
 # plot_cluster(cluster)
-# cluster <- spectral_clustering(data,
+# cluster <- spectral_clustering(iris_std,
+#                               num_clusters=3,
+#                               dim_k=2,
+#                               cluster_fun=kmedoid)
+# a <- rbind(c(2,1,1), c(1,1,2), c(1,2,1))
+# cluster <- spectral_clustering(a,
 #                               num_clusters=3,
 #                               dim_k=2,
 #                               cluster_fun=kmedoid)

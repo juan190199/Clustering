@@ -25,7 +25,7 @@ plot_cluster.hierarchical <- function(cluster, title=NULL, legend = unique(clust
   par(mar=c(5, 4, 4, 4), xpd = TRUE)
 
   # Plot by two dimensions using the first two principal components
-  plot(cluster$data, main=title(title), col = cluster$labels, pch = 19, xlab = "PC1", ylab = "PC2", cex=1)
+  plot(cluster$data, main=head(title, 1), col = cluster$labels, pch = 19, cex=1)
   legend("bottomright", inset = c(-0.17, 0), legend = legend, col = seq(num_clusters), pch = 19, cex=1)
 }
 
@@ -48,7 +48,7 @@ plot_cluster.kmedoid <- function(cluster, title=NULL, legend = unique(cluster$me
 
   # Plot by two dimensions using the first two principal components
   medoids <- cluster$medoids
-  plot(cluster$data[-medoids, ], main=title(title), col = cluster$clusters[-medoids], pch = 1, xlab = "PC1", ylab = "PC2", cex=1)
+  plot(cluster$data[-medoids, ], main=head(title, 1), col = cluster$clusters[-medoids], pch = 1, cex=1)
   points(cluster$data[medoids, ], cex=1.5, pch=17, col = cluster$clusters[medoids])
   legend("bottomright", inset = c(-0.17, 0), legend = c(legend, "medoids"), col = seq(num_clusters+1), pch = c(rep(1, num_clusters), 17), cex=1)
 }

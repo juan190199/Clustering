@@ -49,7 +49,7 @@ beatles <- read_csv(beatles.csv)
 beatles %>% 
   arrange(danceability) %>% 
   head(100) %>% 
-  select(duration_ms, tempo) -> data
+  select(duration_ms, tempo, energy) -> data
 plot(data)
 ```
 ## KMeans
@@ -60,7 +60,6 @@ plot_cluster(kMeans)
 ## KMedoids
 ```{r}
 kMedoids <- kmedoid(data = data, k=2, iter=20)
-attributes(kMedoids)
 plot_cluster(kMedoids)
 ```
 ## Hierarchichal
@@ -73,7 +72,7 @@ plot_cluster(hierarchical)
 ## Spectral
 ### KMeans
 ```{r}
-spectral <- cluster <- spectral_clustering(data,
+spectral <- spectral_clustering(data,
                               num_clusters=3,
                               dim_k=2,
                               cluster_fun=new_kMeans,
@@ -90,7 +89,7 @@ plot_cluster(spectral)
 ```
 ### Hierarchical
 ```{r}
-spectral <- spectral_clustering(data,
+spectral <- spectral_clustering(data[, c(1,3) ],
                               num_clusters=3,
                               dim_k=2,
                               cluster_fun=agglomerative_hierarchical_clustering,
